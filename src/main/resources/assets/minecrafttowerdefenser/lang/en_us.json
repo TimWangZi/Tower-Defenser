@@ -1,0 +1,13 @@
+{
+  "itemGroup.minecrafttowerdefenser": "Example Mod Tab",
+  "block.minecrafttowerdefenser.example_block": "Example Block",
+  "item.minecrafttowerdefenser.example_item": "Example Item",
+
+  "minecrafttowerdefenser.configuration.title": "Minecraft Tower Defenser Configs",
+  "minecrafttowerdefenser.configuration.section.minecrafttowerdefenser.common.toml": "Minecraft Tower Defenser Configs",
+  "minecrafttowerdefenser.configuration.section.minecrafttowerdefenser.common.toml.title": "Minecraft Tower Defenser Configs",
+  "minecrafttowerdefenser.configuration.items": "Item List",
+  "minecrafttowerdefenser.configuration.logDirtBlock": "Log Dirt Block",
+  "minecrafttowerdefenser.configuration.magicNumberIntroduction": "Magic Number Text",
+  "minecrafttowerdefenser.configuration.magicNumber": "Magic Number"
+}
