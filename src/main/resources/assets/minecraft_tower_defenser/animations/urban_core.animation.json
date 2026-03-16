@@ -1,0 +1,58 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"UrbanCore_Start": {
+			"animation_length": 1.25,
+			"bones": {
+				"Top": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.25": {
+							"vector": [-30, -32.5, -37.5]
+						},
+						"0.375": {
+							"vector": [41.69987, -8.58043, -211.55631]
+						},
+						"0.5833": {
+							"vector": [117.36615, 65.79864, -197.97115]
+						},
+						"0.7917": {
+							"vector": [220.81401, 14.14967, -113.71236]
+						},
+						"1.0": {
+							"vector": [0, 0, 0]
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, -1, 0]
+						},
+						"1.0": {
+							"vector": [0, 0, 0],
+							"easing": "easeInBounce"
+						}
+					}
+				}
+			}
+		},
+		"UrbanCore_Work": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"Top": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [0, -360, 0]
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

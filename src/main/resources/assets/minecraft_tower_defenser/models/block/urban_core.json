@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "minecraft_tower_defenser:block/urban_core"
+  }
+}
+
