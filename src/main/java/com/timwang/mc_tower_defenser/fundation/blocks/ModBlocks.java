@@ -21,7 +21,7 @@ public class ModBlocks {
                     .destroyTime(2.0f)
                     .explosionResistance(10.0f)
                     .sound(SoundType.GRAVEL)
-                    .mapColor(MapColor.STONE)));
+                    .mapColor(MapColor.STONE).noOcclusion()));
 
     public static void register(IEventBus eventBus){BLOCKS.register(eventBus);}
 }
