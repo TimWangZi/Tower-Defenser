@@ -10,8 +10,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class UrbanCore extends Block implements EntityBlock {
-    public UrbanCore(BlockBehaviour.Properties properties) {
+public class UrbanCoreBlock extends Block implements EntityBlock {
+    public UrbanCoreBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }
 
