@@ -20,6 +20,7 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
 
     public UrbanCoreBlockEntities(BlockPos pos, BlockState state) {
          super(ModBlockEntities.URBAN_CORE.get(), pos, state);
+
      }
 
     @Override
@@ -29,6 +30,10 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
 
     protected <E extends UrbanCoreBlockEntities> PlayState deployAnimController(final AnimationState<E> state) {
         return state.setAndContinue(DEPLOY_ANIM);
+    }
+
+    public boolean check_territory(BlockPos pos) {
+        return this.getBlockPos().subtract(pos).asLong() < 10.0;
     }
 
     @Override
