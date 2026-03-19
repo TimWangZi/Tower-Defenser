@@ -1,3 +1,12 @@
+# Things to do
+
+- [ ] 防御塔保卫周围方块不被破坏
+
+- [ ] 随机生成属于某一阵营的士兵
+
+- [ ] 士兵寻路
+
+- [ ] 士兵状态机
 
 Installation information
 =======
@@ -14,12 +23,14 @@ run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean`
 
 Mapping Names:
 ============
+
 By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
 in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
 license. For the latest license text, refer to the mapping file itself, or the reference copy here:
 https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
 
-Additional Resources: 
+Additional Resources:
 ==========
+
 Community Documentation: https://docs.neoforged.net/  
 NeoForged Discord: https://discord.neoforged.net/
