@@ -14,13 +14,13 @@ public class LocalTowerManagerBase {
 
     private ArrayList<UrbanCoreBlockEntities> local_tower_list;
 
-    public void LocalTowerManagerBase(String regime_name) {
-        this.name = regime_name;
+    public LocalTowerManagerBase(String nation_name) {
+        this.name = nation_name;
     }
-    public void register_tower(String member_name, UrbanCoreBlockEntities tower){
+    public void registerTower(String member_name, UrbanCoreBlockEntities tower){
         this.local_tower_list.add(tower);
     }
-    public boolean is_in_territory(BlockPos pos) {
+    public boolean isInTerritory(BlockPos pos) {
         boolean tag = false;
         Iterator<UrbanCoreBlockEntities> it = this.local_tower_list.iterator();
         while (it.hasNext()) {
@@ -28,8 +28,7 @@ public class LocalTowerManagerBase {
         }
         return tag;
     }
-    public String getRegimeName() {
+    public String getNationName() {
         return this.name;
     }
-
 }
