@@ -5,6 +5,7 @@ import com.timwang.mc_tower_defenser.fundation.blockEntities.ModBlockEntities;
 import com.timwang.mc_tower_defenser.fundation.system.GlobalTowerManager;
 import com.timwang.mc_tower_defenser.fundation.system.LocalTowerManagerBase;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
@@ -20,7 +21,6 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
                     .thenLoop("UrbanCore_idle");
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
-    private boolean registeredToTowerManager = false;
 
     public UrbanCoreBlockEntities(BlockPos pos, BlockState state) {
          super(ModBlockEntities.URBAN_CORE.get(), pos, state);
@@ -30,14 +30,25 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
     @Override
     public void onLoad() {
         super.onLoad();
-        // 测试: 方块实体加入世界时自动注册到全局塔管理器
-        if (!registeredToTowerManager && this.level != null && !this.level.isClientSide()) {
-            GlobalTowerManager manager = GlobalTowerManager.getInstance();
-            LocalTowerManagerBase testNation = manager.getOrCreateNation("test", "test");
-            manager.registerTower(testNation, this);
-            registeredToTowerManager = true;
-            MinecraftTowerDefenser.LOGGER.info("[test] UrbanCore registered at {} during onLoad", this.getBlockPos());
+        if (this.level instanceof ServerLevel serverLevel) {
+            GlobalTowerManager manager = GlobalTowerManager.get(serverLevel);
+            // 测试: 默认将 UrbanCore 归入 test 阵营，真实项目可改为玩家创建结果
+            LocalTowerManagerBase nation = manager.getOrCreateNation("system", "test");
+            if (manager.registerTower(nation, this.worldPosition, "system")) {
+                MinecraftTowerDefenser.LOGGER.info("[test] UrbanCore registered at {} during onLoad", this.getBlockPos());
+            }
         }
+    }
+
+    @Override
+    public void setRemoved() {
+        if (this.level instanceof ServerLevel serverLevel) {
+            boolean removed = GlobalTowerManager.get(serverLevel).unregisterTower(this.worldPosition);
+            if (removed) {
+                MinecraftTowerDefenser.LOGGER.info("[test] UrbanCore {} removed from tower manager", this.getBlockPos());
+            }
+        }
+        super.setRemoved();
     }
 
     @Override
