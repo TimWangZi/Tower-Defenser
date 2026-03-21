@@ -1,6 +1,9 @@
 package com.timwang.mc_tower_defenser.fundation.blockEntities.Core;
 
+import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import com.timwang.mc_tower_defenser.fundation.blockEntities.ModBlockEntities;
+import com.timwang.mc_tower_defenser.fundation.system.GlobalTowerManager;
+import com.timwang.mc_tower_defenser.fundation.system.LocalTowerManagerBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,11 +20,25 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
                     .thenLoop("UrbanCore_idle");
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    private boolean registeredToTowerManager = false;
 
     public UrbanCoreBlockEntities(BlockPos pos, BlockState state) {
          super(ModBlockEntities.URBAN_CORE.get(), pos, state);
 
      }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        // 测试: 方块实体加入世界时自动注册到全局塔管理器
+        if (!registeredToTowerManager && this.level != null && !this.level.isClientSide()) {
+            GlobalTowerManager manager = GlobalTowerManager.getInstance();
+            LocalTowerManagerBase testNation = manager.getOrCreateNation("test", "test");
+            manager.registerTower(testNation, this);
+            registeredToTowerManager = true;
+            MinecraftTowerDefenser.LOGGER.info("[test] UrbanCore registered at {} during onLoad", this.getBlockPos());
+        }
+    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
@@ -33,7 +50,7 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
     }
 
     public boolean check_territory(BlockPos pos) {
-        return this.getBlockPos().subtract(pos).asLong() < 10.0;
+        return this.getBlockPos().closerThan(pos, 10.0);
     }
 
     @Override
