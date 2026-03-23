@@ -30,13 +30,44 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
     @Override
     public void onLoad() {
         super.onLoad();
+        
+        // 客户端：打开创建国家菜单
+        if (this.level != null && this.level.isClientSide) {
+            this.openCreateCountryScreen();
+        }
+        
+        // 服务端：注册到全局管理器
         if (this.level instanceof ServerLevel serverLevel) {
             GlobalTowerManager manager = GlobalTowerManager.get(serverLevel);
             // 测试: 默认将 UrbanCore 归入 test 阵营，真实项目可改为玩家创建结果
             LocalTowerManagerBase nation = manager.getOrCreateNation("system", "test");
+            
             if (manager.registerTower(nation, this.worldPosition, "system")) {
                 MinecraftTowerDefenser.LOGGER.info("[test] UrbanCore registered at {} during onLoad", this.getBlockPos());
             }
+        }
+    }
+
+    /**
+     * 打开创建国家的菜单
+     * 仅在客户端执行
+     */
+    private void openCreateCountryScreen() {
+        try {
+            // 获取 Minecraft 客户端实例
+            net.minecraft.client.Minecraft minecraft = net.minecraft.client.Minecraft.getInstance();
+            
+            // 检查玩家是否存在
+            if (minecraft.player == null) {
+                return;
+            }
+            
+            // 打开创建国家的菜单
+            minecraft.setScreen(new com.timwang.mc_tower_defenser.fundation.gui.Screen.CreateCountryScreen(minecraft.screen));
+            
+            MinecraftTowerDefenser.LOGGER.info("[UrbanCore] CreateCountryScreen opened at {}", this.getBlockPos());
+        } catch (Exception e) {
+            MinecraftTowerDefenser.LOGGER.error("[UrbanCore] Failed to open CreateCountryScreen", e);
         }
     }
 
