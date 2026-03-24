@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 // 本地塔管理器：维护单个国家/阵营的塔列表和成员
-public class LocalTowerManagerBase {
+public class NationManager {
     private final String name;                   // 阵营名称
     private final List<String> memberNames;      // 属于这个阵营的玩家名
     private final List<BlockPos> towerPositions; // 已注册的UrbanCore塔坐标
 
-    public LocalTowerManagerBase(String nation_name) {
+    public NationManager(String nation_name) {
         this.name = nation_name;
         this.memberNames = new ArrayList<>();
         this.towerPositions = new ArrayList<>();
@@ -80,8 +80,8 @@ public class LocalTowerManagerBase {
     }
 
     // 反序列化
-    public static LocalTowerManagerBase deserialize(CompoundTag tag) {
-        LocalTowerManagerBase nation = new LocalTowerManagerBase(tag.getString("Name"));
+    public static NationManager deserialize(CompoundTag tag) {
+        NationManager nation = new NationManager(tag.getString("Name"));
         ListTag members = tag.getList("Members", Tag.TAG_STRING);
         for (int i = 0; i < members.size(); i++) {
             nation.memberNames.add(members.getString(i));

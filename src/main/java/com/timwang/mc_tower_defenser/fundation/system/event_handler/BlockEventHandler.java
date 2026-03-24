@@ -1,7 +1,7 @@
 package com.timwang.mc_tower_defenser.fundation.system.event_handler;
 
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
-import com.timwang.mc_tower_defenser.fundation.system.GlobalTowerManager;
+import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -17,7 +17,7 @@ public class BlockEventHandler {
         }
 
         // 测试: 如果方块位于任何UrbanCore领地，则取消破坏
-        GlobalTowerManager manager = GlobalTowerManager.get(serverLevel);
+        GlobalNationManager manager = GlobalNationManager.get(serverLevel);
         if (manager.isInAnyTerritory(event.getPos())) {
             event.setCanceled(true);
             if (event.getPlayer() != null) {
