@@ -1,10 +1,12 @@
 package com.timwang.mc_tower_defenser.fundation.entities.Mobs;
 
 import com.timwang.mc_tower_defenser.fundation.entities.ModEntities;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.player.Player;
@@ -19,14 +21,20 @@ public class NormalSoldier extends PathfinderMob implements GeoEntity {
 
     public NormalSoldier(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
-        this.goalSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, Player.class, true));
+
+    }
+
+    @Override
+    protected void registerGoals() {
+        this.goalSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, Player.class, false));
         this.goalSelector.addGoal(1, new WaterAvoidingRandomStrollGoal(this, 1.0));
+        this.goalSelector.addGoal(0, new MeleeAttackGoal(this, 1.0, true));
     }
 
     public static AttributeSupplier.Builder createAttributes(){
         return PathfinderMob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0)
-                .add(Attributes.ATTACK_DAMAGE, 5.0)
+                .add(Attributes.ATTACK_DAMAGE, 20.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.25);
     }
 
@@ -35,6 +43,15 @@ public class NormalSoldier extends PathfinderMob implements GeoEntity {
 
     }
 
+    /*@Override
+    public void tick() {
+        //super.tick();
+    }*/
+
+    /*@Override
+    public void aiStep() {
+        //super.aiStep();
+    }*/
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
