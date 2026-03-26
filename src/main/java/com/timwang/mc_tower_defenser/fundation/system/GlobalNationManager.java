@@ -23,8 +23,8 @@ import java.util.Objects;
 public class GlobalNationManager extends SavedData {
     private static final String DATA_NAME = "tower_manager";
 
-    private final List<NationManager> nationList = new ArrayList<>();           // 全部阵营列表
-    private final Map<String, String> playerNationality = new HashMap<>();              // 玩家 -> 阵营名
+    private static final List<NationManager> nationList = new ArrayList<>();           // 全部阵营列表
+    private static Map<String, String> playerNationality = new HashMap<>();              // 玩家 -> 阵营名
 
     public GlobalNationManager() {
     }
@@ -163,6 +163,8 @@ public class GlobalNationManager extends SavedData {
         }
         return removed;
     }
+
+
 
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {

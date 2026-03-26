@@ -1,7 +1,10 @@
 package com.timwang.mc_tower_defenser.fundation.entities.Mobs;
 
+import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import com.timwang.mc_tower_defenser.fundation.entities.ModEntities;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -18,10 +21,11 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class NormalSoldier extends PathfinderMob implements GeoEntity {
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    private final String nation_belong_to = "";
 
     public NormalSoldier(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
-
+        MinecraftTowerDefenser.LOGGER.info("Entity spawn");
     }
 
     @Override

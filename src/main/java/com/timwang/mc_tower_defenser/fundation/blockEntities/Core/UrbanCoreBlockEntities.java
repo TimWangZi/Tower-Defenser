@@ -4,6 +4,7 @@ import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import com.timwang.mc_tower_defenser.fundation.blockEntities.ModBlockEntities;
 import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;
 import com.timwang.mc_tower_defenser.fundation.system.NationManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,6 +25,7 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
 
     public UrbanCoreBlockEntities(BlockPos pos, BlockState state) {
          super(ModBlockEntities.URBAN_CORE.get(), pos, state);
+       // Minecraft.getInstance().setScreen();
 
      }
 
