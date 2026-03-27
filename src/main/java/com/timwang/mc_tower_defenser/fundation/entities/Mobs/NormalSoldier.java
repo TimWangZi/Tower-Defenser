@@ -1,10 +1,6 @@
 package com.timwang.mc_tower_defenser.fundation.entities.Mobs;
 
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
-import com.timwang.mc_tower_defenser.fundation.entities.ModEntities;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;

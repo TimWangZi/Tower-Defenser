@@ -16,6 +16,7 @@ public class BlockEventHandler {
             return;
         }
 
+
         // 测试: 如果方块位于任何UrbanCore领地，则取消破坏
         GlobalNationManager manager = GlobalNationManager.get(serverLevel);
         if (manager.isInAnyTerritory(event.getPos())) {

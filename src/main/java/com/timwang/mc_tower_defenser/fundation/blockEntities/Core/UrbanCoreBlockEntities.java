@@ -2,11 +2,13 @@ package com.timwang.mc_tower_defenser.fundation.blockEntities.Core;
 
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import com.timwang.mc_tower_defenser.fundation.blockEntities.ModBlockEntities;
+import com.timwang.mc_tower_defenser.fundation.gui.Screen.CreateCountryScreen;
 import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;
 import com.timwang.mc_tower_defenser.fundation.system.NationManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
@@ -25,7 +27,6 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
 
     public UrbanCoreBlockEntities(BlockPos pos, BlockState state) {
          super(ModBlockEntities.URBAN_CORE.get(), pos, state);
-       // Minecraft.getInstance().setScreen();
 
      }
 
@@ -41,6 +42,9 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
             if (manager.registerTower(nation, this.worldPosition, "system")) {
                 MinecraftTowerDefenser.LOGGER.info("[test] UrbanCore registered at {} during onLoad", this.getBlockPos());
             }
+        }
+        if(this.level.isClientSide()){
+            //Minecraft.getInstance().setScreen(new CreateCountryScreen(Minecraft.getInstance().screen));
         }
     }
 

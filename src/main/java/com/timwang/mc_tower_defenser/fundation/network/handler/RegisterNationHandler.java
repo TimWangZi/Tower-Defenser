@@ -13,6 +13,7 @@ public class RegisterNationHandler {
 
     }
     public static void server_handler(final RegisterNationPayloads data, final IPayloadContext context) {
-        GlobalNationManager.get(MinecraftServer.)
+        GlobalNationManager.get(context.player().getServer().overworld())
+                .createNation(data.player_name(), data.nation_name());
     }
 }

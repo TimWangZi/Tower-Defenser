@@ -19,6 +19,6 @@ public record RegisterNationPayloads(String player_name, String nation_name) imp
     );
     @Override
     public Type<? extends CustomPacketPayload> type() {
-        return null;
+        return TYPE;
     }
 }
