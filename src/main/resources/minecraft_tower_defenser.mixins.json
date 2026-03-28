@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.timwang.mc_tower_defenser.fundation.mixin",
+  "mixins": ["InventoryScreenInjector"
+  ],
+  "client": [
+  ],
+  "server": [
+  ],
+  "compatibilityLevel": "JAVA_21",
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

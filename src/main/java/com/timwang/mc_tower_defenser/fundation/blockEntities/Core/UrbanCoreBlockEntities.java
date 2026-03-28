@@ -43,9 +43,6 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
                 MinecraftTowerDefenser.LOGGER.info("[test] UrbanCore registered at {} during onLoad", this.getBlockPos());
             }
         }
-        if(this.level.isClientSide()){
-            //Minecraft.getInstance().setScreen(new CreateCountryScreen(Minecraft.getInstance().screen));
-        }
     }
 
     @Override
