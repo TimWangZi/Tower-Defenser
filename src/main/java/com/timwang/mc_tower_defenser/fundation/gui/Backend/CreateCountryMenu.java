@@ -8,6 +8,10 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import org.checkerframework.checker.units.qual.C;
 
+/**
+ * 建国界面的容器菜单占位实现。
+ * 当前 Screen 主要走纯客户端交互，这个 Menu 更像是未来服务端同步版本的预留壳子。
+ */
 public class CreateCountryMenu extends AbstractContainerMenu {
     // 客户端构造函数
     public CreateCountryMenu(int syncId, Inventory playerInventory, FriendlyByteBuf packetByteBuf){
@@ -18,6 +22,7 @@ public class CreateCountryMenu extends AbstractContainerMenu {
     public CreateCountryMenu(int syncId, Inventory playerInventory/*在此处放入参数*/){
         super(ModGuiMenu.CREATE_COUNTRY_MENU.get(), syncId);
     }
+
     // 没有物品，所以无需快速移动
     @Override
     public ItemStack quickMoveStack(Player player, int i) {

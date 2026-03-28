@@ -12,6 +12,10 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
 
+/**
+ * UrbanCore 的 Geckolib 渲染器。
+ * 这里只负责把方块实体和对应模型连接起来。
+ */
 //@EventBusSubscriber(modid = MinecraftTowerDefenser.MODID, value = Dist.CLIENT)
 public class UrbanCoreRenderer extends GeoBlockRenderer<UrbanCoreBlockEntities> {
     public UrbanCoreRenderer(BlockEntityRendererProvider.Context context) {

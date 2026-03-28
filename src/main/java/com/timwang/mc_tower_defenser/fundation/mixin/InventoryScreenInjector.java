@@ -17,6 +17,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * 背包界面注入器。
+ * 在原版背包里插入一个按钮，作为打开建国界面的入口。
+ */
 @Mixin(InventoryScreen.class)
 public class InventoryScreenInjector extends EffectRenderingInventoryScreen<InventoryMenu> implements RecipeUpdateListener{
     public InventoryScreenInjector(InventoryMenu menu, Inventory playerInventory, Component title) {
@@ -28,6 +32,7 @@ public class InventoryScreenInjector extends EffectRenderingInventoryScreen<Inve
 
     }
 
+    /** 打开建国界面，并把当前界面作为返回目标传进去。 */
     void onClickCreateCountryButton() {
         Minecraft.getInstance().setScreen(new CreateCountryScreen(Minecraft.getInstance().screen));
     }
@@ -35,6 +40,7 @@ public class InventoryScreenInjector extends EffectRenderingInventoryScreen<Inve
     @Inject(method = "init()V", at = @At("TAIL"))
     protected void injectInventoryScreen(CallbackInfo ci) {
         InventoryScreen screen = (InventoryScreen)(Object) this;
+        // 在原版背包初始化完成后追加按钮，避免与原版控件布局互相覆盖。
         Button customButton = Button.builder(
                         Component.literal("Create"), // TODO：添加国际化文本组件
                         button -> {

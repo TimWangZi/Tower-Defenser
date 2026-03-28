@@ -9,7 +9,10 @@ import net.minecraft.nbt.Tag;
 import java.util.ArrayList;
 import java.util.List;
 
-// 本地塔管理器：维护单个国家/阵营的塔列表和成员
+/**
+ * 单个国家的数据对象。
+ * 保存国家名称、成员列表和该国家持有的 UrbanCore 坐标。
+ */
 public class NationManager {
     private final String name;                   // 阵营名称
     private final List<String> memberNames;      // 属于这个阵营的玩家名
@@ -21,11 +24,21 @@ public class NationManager {
         this.towerPositions = new ArrayList<>();
     }
 
+    /** 为国家补录成员，不重复添加。 */
+    public void addMember(String memberName) {
+        if (memberName != null && !memberName.isBlank() && !memberNames.contains(memberName)) {
+            memberNames.add(memberName);
+        }
+    }
+
+    /** 判断玩家名是否已经归属于当前国家。 */
+    public boolean hasMember(String memberName) {
+        return memberName != null && memberNames.contains(memberName);
+    }
+
     // 注册一个塔到当前阵营，同时记录玩家（若提供）
     public void registerTower(String member_name, BlockPos pos){
-        if (member_name != null && !member_name.isEmpty() && !memberNames.contains(member_name)) {
-            memberNames.add(member_name);
-        }
+        addMember(member_name);
         if (pos != null && !towerPositions.contains(pos)) {
             towerPositions.add(pos);
         }

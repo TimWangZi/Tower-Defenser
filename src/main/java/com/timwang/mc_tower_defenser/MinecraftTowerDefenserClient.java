@@ -10,11 +10,14 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
-// This class will not load on dedicated servers. Accessing client side code from here is safe.
+/**
+ * 客户端入口。
+ * 这里只放客户端专属的初始化，例如配置界面入口和客户端日志。
+ */
 @Mod(value = MinecraftTowerDefenser.MODID, dist = Dist.CLIENT)
-// You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 @EventBusSubscriber(modid = MinecraftTowerDefenser.MODID, value = Dist.CLIENT)
 public class MinecraftTowerDefenserClient {
+    /** 注册模组配置界面，让 Mod 列表页可以直接打开配置屏幕。 */
     public MinecraftTowerDefenserClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
@@ -22,6 +25,7 @@ public class MinecraftTowerDefenserClient {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
+    /** 客户端初始化阶段，目前主要用于简单日志确认。 */
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         // Some client setup code

@@ -8,6 +8,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.BlockEvent;
 
+/**
+ * 方块相关事件处理器。
+ * 当前用于演示 UrbanCore 领地保护效果。
+ */
 @EventBusSubscriber(modid = MinecraftTowerDefenser.MODID)
 public class BlockEventHandler {
     @SubscribeEvent
@@ -16,8 +20,7 @@ public class BlockEventHandler {
             return;
         }
 
-
-        // 测试: 如果方块位于任何UrbanCore领地，则取消破坏
+        // 目前的保护规则是“落在任意国家 UrbanCore 领地半径内就禁止破坏”。
         GlobalNationManager manager = GlobalNationManager.get(serverLevel);
         if (manager.isInAnyTerritory(event.getPos())) {
             event.setCanceled(true);

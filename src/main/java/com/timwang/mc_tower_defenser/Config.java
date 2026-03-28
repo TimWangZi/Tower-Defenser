@@ -6,8 +6,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-// An example config class. This is not required, but it's a good idea to have one to keep your config organized.
-// Demonstrates how to use Neo's config APIs
+/**
+ * 模组公共配置定义。
+ * 这里保留了 NeoForge 模板里的示例项，当前主要用于演示配置读取流程。
+ */
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
@@ -30,6 +32,7 @@ public class Config {
 
     static final ModConfigSpec SPEC = BUILDER.build();
 
+    /** 校验配置中的物品字符串能否解析为已注册物品。 */
     private static boolean validateItemName(final Object obj) {
         return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
     }

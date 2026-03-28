@@ -1,6 +1,5 @@
 package com.timwang.mc_tower_defenser.fundation.system;
 
-import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -8,8 +7,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.common.Mod;
 import oshi.util.tuples.Pair;
 
 import java.util.ArrayList;
@@ -18,8 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-// 全局塔管理器：维护所有阵营（LocalTowerManagerBase）及其塔实例，并持久化到存档,是服务器类
-@Mod(value = MinecraftTowerDefenser.MODID, dist = Dist.DEDICATED_SERVER)
+/**
+ * 世界级国家数据管理器。
+ * 基于 SavedData 持久化全部国家、成员归属和 UrbanCore 注册信息。
+ */
 public class GlobalNationManager extends SavedData {
     private static final String DATA_NAME = "tower_manager";
 
@@ -29,12 +28,18 @@ public class GlobalNationManager extends SavedData {
     public GlobalNationManager() {
     }
 
+    /** 世界第一次没有现成存档数据时，创建一个空管理器实例。 */
     public static GlobalNationManager create() {
+        nationList.clear();
+        playerNationality.clear();
         return new GlobalNationManager();
     }
 
+    /** 从存档 NBT 还原国家列表与玩家归属索引。 */
     public static GlobalNationManager load(CompoundTag tag, HolderLookup.Provider provider) {
         GlobalNationManager manager = new GlobalNationManager();
+        nationList.clear();
+        playerNationality.clear();
         ListTag nations = tag.getList("Nations", Tag.TAG_COMPOUND);
         for (int i = 0; i < nations.size(); i++) {
             manager.nationList.add(NationManager.deserialize(nations.getCompound(i)));
@@ -46,6 +51,7 @@ public class GlobalNationManager extends SavedData {
         return manager;
     }
 
+    /** 获取当前维度对应世界共享的国家管理器。 */
     public static GlobalNationManager get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
                 new SavedData.Factory<>(GlobalNationManager::create, GlobalNationManager::load, null),
@@ -66,7 +72,7 @@ public class GlobalNationManager extends SavedData {
 
     // 判断玩家是否已有阵营
     public synchronized boolean hasNation(String playerName) {
-        return playerNationality.containsKey(playerName);
+        return getNationByPlayer(playerName) != null;
     }
 
     // 创建新阵营并记录玩家归属
@@ -75,6 +81,7 @@ public class GlobalNationManager extends SavedData {
             return err_type.NATION_CREATE_ALREADYHAVE;
         }
         NationManager new_nation = new NationManager(nation_name);
+        new_nation.addMember(player_name);
         nationList.add(new_nation);
         if (player_name != null) {
             playerNationality.put(player_name, nation_name);
@@ -106,13 +113,43 @@ public class GlobalNationManager extends SavedData {
     public synchronized void bindPlayerToNation(String playerName, NationManager nation) {
         if (playerName != null && nation != null) {
             playerNationality.put(playerName, nation.getNationName());
+            nation.addMember(playerName);
             setDirty();
         }
     }
 
     // 根据玩家名获取阵营
+    /**
+     * 先查玩家到国家的索引映射，映射缺失时再回退到 NationManager 成员列表重建索引。
+     * 这样能兼容旧存档或映射与成员列表不一致的情况。
+     */
     public synchronized NationManager getNationByPlayer(String playerName) {
-        return findNation(playerNationality.get(playerName));
+        if (playerName == null || playerName.isBlank()) {
+            return null;
+        }
+
+        String nationName = playerNationality.get(playerName);
+        NationManager mappedNation = findNation(nationName);
+        if (mappedNation != null) {
+            return mappedNation;
+        }
+
+        if (nationName != null) {
+            playerNationality.remove(playerName);
+        }
+
+        for (NationManager nation : nationList) {
+            if (nation.hasMember(playerName)) {
+                playerNationality.put(playerName, nation.getNationName());
+                setDirty();
+                return nation;
+            }
+        }
+
+        if (nationName != null) {
+            setDirty();
+        }
+        return null;
     }
 
     // 将UrbanCore注册到指定阵营
@@ -150,6 +187,23 @@ public class GlobalNationManager extends SavedData {
             }
         }
         return false;
+    }
+
+    /**
+     * 根据坐标查找所属领地的国家。
+     * 如果多个国家领地发生重叠，当前返回遍历到的第一个国家。
+     */
+    public synchronized NationManager getNationByTerritory(BlockPos pos) {
+        if (pos == null) {
+            return null;
+        }
+
+        for (NationManager nation : nationList) {
+            if (nation.isInTerritory(pos)) {
+                return nation;
+            }
+        }
+        return null;
     }
 
     // 从所有阵营中注销一个 UrbanCore 塔

@@ -1,18 +1,21 @@
 package com.timwang.mc_tower_defenser.fundation.network;
 
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
+import com.timwang.mc_tower_defenser.fundation.network.handler.PlayerNationPayloadHandler;
 import com.timwang.mc_tower_defenser.fundation.network.handler.RegisterNationHandler;
+import com.timwang.mc_tower_defenser.fundation.network.payloads.RequestPlayerNationPayload;
 import com.timwang.mc_tower_defenser.fundation.network.payloads.RegisterNationPayloads;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import com.timwang.mc_tower_defenser.fundation.network.payloads.SyncPlayerNationPayload;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.neoforged.neoforge.registries.RegisterEvent;
 
-@EventBusSubscriber(modid = MinecraftTowerDefenser.MODID)
+/**
+ * 自定义网络包注册入口。
+ * 当前负责国家创建请求，以及客户端查询当前玩家国家信息这两条链路。
+ */
 public class ModNetwork {
-    @SubscribeEvent
+    /** 在模组事件总线触发时注册全部 payload 与处理器。 */
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("b0.1");
         registrar.playBidirectional(RegisterNationPayloads.TYPE ,
@@ -20,5 +23,11 @@ public class ModNetwork {
                         RegisterNationHandler::client_handler,
                         RegisterNationHandler::server_handler
                 ));
+        registrar.playToServer(RequestPlayerNationPayload.TYPE,
+                RequestPlayerNationPayload.CODEC,
+                PlayerNationPayloadHandler::serverHandler);
+        registrar.playToClient(SyncPlayerNationPayload.TYPE,
+                SyncPlayerNationPayload.CODEC,
+                PlayerNationPayloadHandler::clientHandler);
     }
 }
