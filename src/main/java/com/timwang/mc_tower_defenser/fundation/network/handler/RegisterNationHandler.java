@@ -1,7 +1,9 @@
 package com.timwang.mc_tower_defenser.fundation.network.handler;
 
+import com.timwang.mc_tower_defenser.fundation.network.NationSyncService;
 import com.timwang.mc_tower_defenser.fundation.network.payloads.RegisterNationPayloads;
 import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
@@ -20,8 +22,10 @@ public class RegisterNationHandler {
                 return;
             }
 
-            GlobalNationManager.get(context.player().getServer().overworld())
+            ServerPlayer player = (ServerPlayer) context.player();
+            GlobalNationManager.get(player.getServer().overworld())
                     .createNation(context.player().getGameProfile().getName(), data.nation_name());
+            NationSyncService.syncPlayer(player);
         });
     }
 }

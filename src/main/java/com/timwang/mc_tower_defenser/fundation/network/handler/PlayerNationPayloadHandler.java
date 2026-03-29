@@ -1,15 +1,11 @@
 package com.timwang.mc_tower_defenser.fundation.network.handler;
 
 import com.timwang.mc_tower_defenser.fundation.network.ClientNationState;
+import com.timwang.mc_tower_defenser.fundation.network.NationSyncService;
 import com.timwang.mc_tower_defenser.fundation.network.payloads.RequestPlayerNationPayload;
 import com.timwang.mc_tower_defenser.fundation.network.payloads.SyncPlayerNationPayload;
-import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;
-import com.timwang.mc_tower_defenser.fundation.system.NationManager;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import java.util.List;
 
 /**
  * 当前玩家国家信息查询的处理器。
@@ -23,9 +19,7 @@ public final class PlayerNationPayloadHandler {
     public static void clientHandler(final SyncPlayerNationPayload data, final IPayloadContext context) {
         context.enqueueWork(() -> ClientNationState.update(
                 data.playerName(),
-                data.found(),
-                data.nationName(),
-                data.towerPositions()
+                data.nation().orElse(null)
         ));
     }
 
@@ -37,14 +31,7 @@ public final class PlayerNationPayloadHandler {
             }
 
             ServerPlayer player = (ServerPlayer) context.player();
-            String playerName = player.getGameProfile().getName();
-            NationManager nation = GlobalNationManager.get(player.getServer().overworld())
-                    .getNationByPlayer(playerName);
-            boolean found = nation != null;
-            String nationName = found ? nation.getNationName() : "";
-            List<net.minecraft.core.BlockPos> towerPositions = found ? List.copyOf(nation.getTowerPositions()) : List.of();
-
-            PacketDistributor.sendToPlayer(player, new SyncPlayerNationPayload(playerName, found, nationName, towerPositions));
+            NationSyncService.syncPlayer(player);
         });
     }
 }

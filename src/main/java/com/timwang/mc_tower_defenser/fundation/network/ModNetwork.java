@@ -17,7 +17,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public class ModNetwork {
     /** 在模组事件总线触发时注册全部 payload 与处理器。 */
     public static void register(final RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar("b0.1");
+        final PayloadRegistrar registrar = event.registrar("b0.2");
         registrar.playBidirectional(RegisterNationPayloads.TYPE ,
                 RegisterNationPayloads.CODEC, new DirectionalPayloadHandler<>(
                         RegisterNationHandler::client_handler,

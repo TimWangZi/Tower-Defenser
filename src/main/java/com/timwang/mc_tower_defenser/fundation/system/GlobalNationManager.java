@@ -42,7 +42,7 @@ public class GlobalNationManager extends SavedData {
         playerNationality.clear();
         ListTag nations = tag.getList("Nations", Tag.TAG_COMPOUND);
         for (int i = 0; i < nations.size(); i++) {
-            manager.nationList.add(NationManager.deserialize(nations.getCompound(i)));
+            manager.nationList.add(NationManager.deserializeNBT(nations.getCompound(i)));
         }
         CompoundTag players = tag.getCompound("PlayerNationality");
         for (String key : players.getAllKeys()) {
@@ -112,9 +112,11 @@ public class GlobalNationManager extends SavedData {
     // 将玩家绑定到阵营
     public synchronized void bindPlayerToNation(String playerName, NationManager nation) {
         if (playerName != null && nation != null) {
-            playerNationality.put(playerName, nation.getNationName());
-            nation.addMember(playerName);
-            setDirty();
+            boolean changed = !Objects.equals(playerNationality.put(playerName, nation.getNationName()), nation.getNationName());
+            changed |= nation.addMember(playerName);
+            if (changed) {
+                setDirty();
+            }
         }
     }
 
@@ -152,14 +154,21 @@ public class GlobalNationManager extends SavedData {
         return null;
     }
 
+    public synchronized NationManager getNationByName(String nationName) {
+        return findNation(nationName);
+    }
+
     // 将UrbanCore注册到指定阵营
     public synchronized boolean registerTower(NationManager nation, BlockPos pos, String memberName) {
         if (nation == null || pos == null) {
             return false;
         }
-        nation.registerTower(memberName, pos);
-        setDirty();
-        return true;
+
+        boolean changed = nation.registerTower(memberName, pos);
+        if (changed) {
+            setDirty();
+        }
+        return changed;
     }
 
     // 删除阵营
@@ -208,14 +217,26 @@ public class GlobalNationManager extends SavedData {
 
     // 从所有阵营中注销一个 UrbanCore 塔
     public synchronized boolean unregisterTower(BlockPos pos) {
-        boolean removed = false;
+        return unregisterTowerAndGetNation(pos) != null;
+    }
+
+    /**
+     * 从所有阵营中注销一个 UrbanCore 塔，并返回实际发生变更的国家。
+     * 当前默认一个塔只归属于一个国家，因此找到后会立即返回。
+     */
+    public synchronized NationManager unregisterTowerAndGetNation(BlockPos pos) {
+        if (pos == null) {
+            return null;
+        }
+
         for (NationManager nation : nationList) {
-            removed |= nation.unregisterTower(pos);
+            if (nation.unregisterTower(pos)) {
+                setDirty();
+                return nation;
+            }
         }
-        if (removed) {
-            setDirty();
-        }
-        return removed;
+
+        return null;
     }
 
 
@@ -224,7 +245,7 @@ public class GlobalNationManager extends SavedData {
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
         ListTag nations = new ListTag();
         for (NationManager nation : nationList) {
-            nations.add(nation.serialize());
+            nations.add(nation.serializeNBT());
         }
         tag.put("Nations", nations);
 

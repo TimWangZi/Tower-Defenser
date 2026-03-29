@@ -1,7 +1,6 @@
 package com.timwang.mc_tower_defenser.fundation.model.Mob;
 
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
-import com.timwang.mc_tower_defenser.fundation.blockEntities.Core.UrbanCoreBlockEntities;
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.NormalSoldier;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;

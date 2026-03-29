@@ -2,6 +2,7 @@ package com.timwang.mc_tower_defenser.fundation.system.event_handler;
 
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;
+import com.timwang.mc_tower_defenser.fundation.system.NationManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,14 +21,34 @@ public class BlockEventHandler {
             return;
         }
 
-        // 目前的保护规则是“落在任意国家 UrbanCore 领地半径内就禁止破坏”。
         GlobalNationManager manager = GlobalNationManager.get(serverLevel);
-        if (manager.isInAnyTerritory(event.getPos())) {
-            event.setCanceled(true);
-            if (event.getPlayer() != null) {
-                event.getPlayer().displayClientMessage(Component.literal("[test] This block is protected by UrbanCore"), true);
-            }
-            MinecraftTowerDefenser.LOGGER.info("[test] Cancelled block break at {} because it is inside UrbanCore territory", event.getPos());
+        NationManager territoryNation = manager.getNationByTerritory(event.getPos());
+        if (territoryNation == null) {
+            return;
         }
+
+        if (event.getPlayer() == null) {
+            event.setCanceled(true);
+            MinecraftTowerDefenser.LOGGER.info("[test] Cancelled block break at {} because no player context was available", event.getPos());
+            return;
+        }
+
+        String playerName = event.getPlayer().getGameProfile().getName();
+        NationManager playerNation = manager.getNationByPlayer(playerName);
+        if (playerNation != null && territoryNation.getNationName().equals(playerNation.getNationName())) {
+            return;
+        }
+
+        event.setCanceled(true);
+        event.getPlayer().displayClientMessage(
+                Component.literal("[test] Only members of nation " + territoryNation.getNationName() + " can break blocks here"),
+                true
+        );
+        MinecraftTowerDefenser.LOGGER.info(
+                "[test] Cancelled block break at {} because player {} does not belong to nation {}",
+                event.getPos(),
+                playerName,
+                territoryNation.getNationName()
+        );
     }
 }

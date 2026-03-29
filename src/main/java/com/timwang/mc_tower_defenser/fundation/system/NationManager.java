@@ -1,19 +1,31 @@
 package com.timwang.mc_tower_defenser.fundation.system;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 单个国家的数据对象。
  * 保存国家名称、成员列表和该国家持有的 UrbanCore 坐标。
  */
 public class NationManager {
+    public static final StreamCodec<ByteBuf, NationManager> STREAM_CODEC =
+            ByteBufCodecs.COMPOUND_TAG.map(NationManager::deserializeNBT, NationManager::serializeNBT);
+    public static final StreamCodec<ByteBuf, Optional<NationManager>> OPTIONAL_STREAM_CODEC =
+            ByteBufCodecs.OPTIONAL_COMPOUND_TAG.map(
+                    optionalTag -> optionalTag.map(NationManager::deserializeNBT),
+                    optionalNation -> optionalNation.map(NationManager::serializeNBT)
+            );
+
     private final String name;                   // 阵营名称
     private final List<String> memberNames;      // 属于这个阵营的玩家名
     private final List<BlockPos> towerPositions; // 已注册的UrbanCore塔坐标
@@ -25,10 +37,13 @@ public class NationManager {
     }
 
     /** 为国家补录成员，不重复添加。 */
-    public void addMember(String memberName) {
-        if (memberName != null && !memberName.isBlank() && !memberNames.contains(memberName)) {
-            memberNames.add(memberName);
+    public boolean addMember(String memberName) {
+        if (memberName == null || memberName.isBlank() || memberNames.contains(memberName)) {
+            return false;
         }
+
+        memberNames.add(memberName);
+        return true;
     }
 
     /** 判断玩家名是否已经归属于当前国家。 */
@@ -37,11 +52,13 @@ public class NationManager {
     }
 
     // 注册一个塔到当前阵营，同时记录玩家（若提供）
-    public void registerTower(String member_name, BlockPos pos){
-        addMember(member_name);
+    public boolean registerTower(String member_name, BlockPos pos) {
+        boolean changed = addMember(member_name);
         if (pos != null && !towerPositions.contains(pos)) {
             towerPositions.add(pos);
+            changed = true;
         }
+        return changed;
     }
 
     // 注销一个塔（方块实体被移除时调用）
@@ -64,15 +81,20 @@ public class NationManager {
     }
 
     public List<String> getMemberNames() {
-        return memberNames;
+        return List.copyOf(memberNames);
     }
 
     public List<BlockPos> getTowerPositions() {
-        return towerPositions;
+        return List.copyOf(towerPositions);
     }
 
-    // 序列化当前阵营信息，用于 SavedData
-    public CompoundTag serialize() {
+    /** 返回一份深拷贝，便于客户端缓存使用。 */
+    public NationManager copy() {
+        return deserializeNBT(this.serializeNBT());
+    }
+
+    /** 序列化当前阵营信息，可同时用于 SavedData 与网络同步。 */
+    public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
         tag.putString("Name", this.name);
 
@@ -92,8 +114,13 @@ public class NationManager {
         return tag;
     }
 
-    // 反序列化
-    public static NationManager deserialize(CompoundTag tag) {
+    /** 为兼容旧调用方保留的别名。 */
+    public CompoundTag serialize() {
+        return serializeNBT();
+    }
+
+    /** 反序列化当前阵营信息，可同时用于 SavedData 与网络同步。 */
+    public static NationManager deserializeNBT(CompoundTag tag) {
         NationManager nation = new NationManager(tag.getString("Name"));
         ListTag members = tag.getList("Members", Tag.TAG_STRING);
         for (int i = 0; i < members.size(); i++) {
@@ -105,5 +132,10 @@ public class NationManager {
             nation.towerPositions.add(BlockPos.of(posTag.getLong("Pos")));
         }
         return nation;
+    }
+
+    /** 为兼容旧调用方保留的别名。 */
+    public static NationManager deserialize(CompoundTag tag) {
+        return deserializeNBT(tag);
     }
 }

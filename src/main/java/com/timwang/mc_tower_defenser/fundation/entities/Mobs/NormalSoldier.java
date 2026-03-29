@@ -3,6 +3,7 @@ package com.timwang.mc_tower_defenser.fundation.entities.Mobs;
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;
 import com.timwang.mc_tower_defenser.fundation.system.NationManager;
+import com.timwang.mc_tower_defenser.fundation.utils.ai.goal.AttackOtherGoal;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -16,8 +17,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import org.jetbrains.annotations.Nullable;
@@ -50,10 +49,10 @@ public class NormalSoldier extends PathfinderMob implements GeoEntity {
 
     @Override
     protected void registerGoals() {
-        // 目标与行为都很简单：锁定玩家、随机游走、近战攻击。
-        this.goalSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, Player.class, false));
-        this.goalSelector.addGoal(1, new WaterAvoidingRandomStrollGoal(this, 1.0));
-        this.goalSelector.addGoal(0, new MeleeAttackGoal(this, 1.0, true));
+        // [test-only] 验证用：普通士兵只会主动索敌非本阵营目标，后续可整段删除替换。
+        this.targetSelector.addGoal(0, new AttackOtherGoal(this));
+        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.0, true));
+        this.goalSelector.addGoal(2, new WaterAvoidingRandomStrollGoal(this, 1.0));
     }
 
     /** 返回实体基础属性表，供实体类型注册阶段挂载。 */
@@ -108,16 +107,6 @@ public class NormalSoldier extends PathfinderMob implements GeoEntity {
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
 
     }
-
-    /*@Override
-    public void tick() {
-        //super.tick();
-    }*/
-
-    /*@Override
-    public void aiStep() {
-        //super.aiStep();
-    }*/
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {

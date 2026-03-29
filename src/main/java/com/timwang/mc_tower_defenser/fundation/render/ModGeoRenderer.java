@@ -18,8 +18,8 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 public class ModGeoRenderer {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        System.out.println("[UrbanCoreRenderer] registering block entity renderer");
+        MinecraftTowerDefenser.LOGGER.info("Registering Geckolib renderers");
         event.registerBlockEntityRenderer(ModBlockEntities.URBAN_CORE.get(), UrbanCoreRenderer::new);
-        event.registerEntityRenderer(ModEntities.NORMAL_SOLDIER.get(),NormalSoldierRender::new);
+        event.registerEntityRenderer(ModEntities.NORMAL_SOLDIER.get(), NormalSoldierRender::new);
     }
 }
