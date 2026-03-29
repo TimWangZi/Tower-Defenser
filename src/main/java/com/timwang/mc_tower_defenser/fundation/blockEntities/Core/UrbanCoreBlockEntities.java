@@ -49,6 +49,10 @@ public class UrbanCoreBlockEntities extends BlockEntity implements GeoBlockEntit
         super.onLoad();
 
         if (this.level instanceof ServerLevel serverLevel) {
+            //Test
+            /*String playerName = "PlayerA";
+            NationManager nation = GlobalNationManager.get(serverLevel).getNationByPlayer(playerName);
+            bindToNation(playerName, nation == null ? "" : nation.getNationName());*/
             registerBoundNation(serverLevel);
         }
     }
