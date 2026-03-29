@@ -3,6 +3,7 @@ package com.timwang.mc_tower_defenser;
 import com.timwang.mc_tower_defenser.fundation.blocks.ModBlocks;
 import com.timwang.mc_tower_defenser.fundation.blockEntities.ModBlockEntities;
 import com.timwang.mc_tower_defenser.fundation.entities.ModEntities;
+import com.timwang.mc_tower_defenser.fundation.network.ModNetwork;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -33,7 +34,10 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
+/**
+ * 模组主入口。
+ * 负责挂接 NeoForge 生命周期、注册内容物以及接入自定义网络。
+ */
 @Mod(MinecraftTowerDefenser.MODID)
 public class MinecraftTowerDefenser {
     // Define mod id in a common place for everything to reference
@@ -72,6 +76,7 @@ public class MinecraftTowerDefenser {
     public MinecraftTowerDefenser(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(ModNetwork::register);
 
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
@@ -95,6 +100,7 @@ public class MinecraftTowerDefenser {
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
+    /** 公共初始化阶段，适合放不依赖世界实例的一次性初始化逻辑。 */
     private void commonSetup(FMLCommonSetupEvent event) {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
@@ -108,14 +114,14 @@ public class MinecraftTowerDefenser {
         Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
     }
 
-    // Add the example block item to the building blocks tab
+    /** 将示例物品塞进创造模式页签，保留模板行为便于验证注册是否正常。 */
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(EXAMPLE_BLOCK_ITEM);
         }
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
+    /** 服务端启动时输出一条日志，方便确认模组已经参与服务端生命周期。 */
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         // Do something when the server starts

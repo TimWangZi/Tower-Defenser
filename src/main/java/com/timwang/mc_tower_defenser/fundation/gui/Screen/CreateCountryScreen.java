@@ -1,10 +1,14 @@
 package com.timwang.mc_tower_defenser.fundation.gui.Screen;
 
+import com.timwang.mc_tower_defenser.fundation.network.payloads.RegisterNationPayloads;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -17,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
  * - Y 轴向下为正
  * - 当屏幕缩放时，init() 会自动被调用，需要重新计算所有组件位置
  */
+@OnlyIn(net.neoforged.api.distmarker.Dist.CLIENT)
 public class CreateCountryScreen extends Screen {
 
     // GUI 面板尺寸
@@ -195,6 +200,7 @@ public class CreateCountryScreen extends Screen {
         // TODO: 发送网络包到服务端创建国家
         // PacketHandler.INSTANCE.sendToServer(new CreateCountryPacket(countryName));
         // System.out.println("创建国家: " + countryName);
+        PacketDistributor.sendToServer(new RegisterNationPayloads(Minecraft.getInstance().player.getName().getString() ,countryName));
 
         // 关闭此屏幕，返回到之前的屏幕
         this.onClose();

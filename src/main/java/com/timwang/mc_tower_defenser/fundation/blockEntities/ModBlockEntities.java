@@ -10,6 +10,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
+/**
+ * 集中注册方块实体类型。
+ * 这里把方块逻辑对象和具体方块实例做绑定。
+ */
 public class ModBlockEntities {
     // 新建一个方块实体注册器
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITYIES = DeferredRegister.create(
@@ -19,6 +23,7 @@ public class ModBlockEntities {
     public static final Supplier<BlockEntityType<UrbanCoreBlockEntities>> URBAN_CORE = BLOCK_ENTITYIES.register(
             "urban_core",() -> BlockEntityType.Builder.of(UrbanCoreBlockEntities::new, ModBlocks.URBAN_CORE.get()).build(null));
 
+    /** 挂到模组事件总线，完成方块实体类型注册。 */
     public static void register(IEventBus eventBus){ BLOCK_ENTITYIES.register(eventBus); }
 
 }
