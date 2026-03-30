@@ -171,6 +171,58 @@ public class GlobalNationManager extends SavedData {
         return changed;
     }
 
+    /** 向指定国家的工作图注册一个节点。 */
+    public synchronized boolean registerWorkNode(NationManager nation, BlockPos pos) {
+        if (nation == null || pos == null) {
+            return false;
+        }
+
+        boolean changed = nation.registerWorkNode(pos);
+        if (changed) {
+            setDirty();
+        }
+        return changed;
+    }
+
+    /** 从指定国家的工作图移除一个节点。 */
+    public synchronized boolean unregisterWorkNode(NationManager nation, BlockPos pos) {
+        if (nation == null || pos == null) {
+            return false;
+        }
+
+        boolean changed = nation.unregisterWorkNode(pos);
+        if (changed) {
+            setDirty();
+        }
+        return changed;
+    }
+
+    /** 在指定国家的工作图中新增一条有向边。 */
+    public synchronized boolean connectWorkNodes(NationManager nation, BlockPos from, BlockPos to) {
+        if (nation == null || from == null || to == null) {
+            return false;
+        }
+
+        boolean changed = nation.connectWorkNodes(from, to);
+        if (changed) {
+            setDirty();
+        }
+        return changed;
+    }
+
+    /** 从指定国家的工作图中删除一条有向边。 */
+    public synchronized boolean disconnectWorkNodes(NationManager nation, BlockPos from, BlockPos to) {
+        if (nation == null || from == null || to == null) {
+            return false;
+        }
+
+        boolean changed = nation.disconnectWorkNodes(from, to);
+        if (changed) {
+            setDirty();
+        }
+        return changed;
+    }
+
     // 删除阵营
     public synchronized err_type deleteNation(String nation_name) {
         NationManager nation = findNation(nation_name);

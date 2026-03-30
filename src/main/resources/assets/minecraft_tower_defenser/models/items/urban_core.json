@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "minecraft_tower_defenser:items/urban_core"
+    }
+}
