@@ -1,83 +1,126 @@
 package com.timwang.mc_tower_defenser.fundation.utils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
- * 通用状态机基类：提供状态切换、进入/退出钩子与事件处理。
- * @param <S> 状态类型（推荐使用 enum）
- * @param <E> 事件类型
+ * 基于 Task 的状态机。
+ * 每条边都必须显式注册一个 lambda 条件；在同一状态下，按注册顺序检查边，第一条满足条件的边会生效。
+ *
+ * @param <C> 状态机运行时上下文
  */
-public class StateMachine<S, E> {
-    public interface TransitionGuard<S, E> {
-        boolean canTransition(S from, S to, E event);
+public class StateMachine<C> {
+    private final Map<Task<C>, List<Transition<C>>> transitions = new LinkedHashMap<>();
+
+    private Task<C> currentTask;
+    private boolean started;
+
+    public StateMachine(Task<C> initialTask) {
+        this.currentTask = Objects.requireNonNull(initialTask, "initialTask");
+        addTask(initialTask);
     }
 
-    private final Map<S, Consumer<E>> onEnter = new ConcurrentHashMap<>();
-    private final Map<S, Consumer<E>> onExit = new ConcurrentHashMap<>();
-    private final Map<S, Consumer<E>> handlers = new ConcurrentHashMap<>();
-    private final TransitionGuard<S, E> guard;
-
-    private volatile S current;
-
-    public StateMachine(S initial, TransitionGuard<S, E> guard) {
-        this.current = Objects.requireNonNull(initial);
-        this.guard = guard;
+    public Task<C> getCurrentTask() {
+        return currentTask;
     }
 
-    public S getState() {
-        return current;
-    }
-
-    /** 注册状态进入时的回调。 */
-    public StateMachine<S, E> onEnter(S state, Consumer<E> action) {
-        onEnter.put(state, action);
+    public StateMachine<C> addTask(Task<C> task) {
+        transitions.computeIfAbsent(Objects.requireNonNull(task, "task"), key -> new ArrayList<>());
         return this;
     }
 
-    /** 注册状态退出时的回调。 */
-    public StateMachine<S, E> onExit(S state, Consumer<E> action) {
-        onExit.put(state, action);
+    /**
+     * 注册一条状态边。
+     * from -> to 是否生效，完全由该边对应的 condition 决定。
+     */
+    public StateMachine<C> addTransition(Task<C> from, Task<C> to, Predicate<TransitionContext<C>> condition) {
+        Objects.requireNonNull(condition, "condition");
+        addTask(from);
+        addTask(to);
+        transitions.get(from).add(new Transition<>(from, to, condition));
         return this;
     }
 
-    /** 注册指定状态下的事件处理逻辑。 */
-    public StateMachine<S, E> onHandle(S state, Consumer<E> action) {
-        handlers.put(state, action);
-        return this;
+    /**
+     * 手动请求切换到指定任务。
+     * 只有当前状态存在一条通向 nextTask 的边且其条件满足时，切换才会成功。
+     */
+    public boolean transitionTo(Task<C> nextTask, C context) {
+        Objects.requireNonNull(nextTask, "nextTask");
+        Objects.requireNonNull(context, "context");
+        ensureStarted(context);
+
+        for (Transition<C> transition : getOutgoingTransitions(currentTask)) {
+            if (Objects.equals(transition.to, nextTask) && transition.isTriggered(context, currentTask)) {
+                performTransition(transition.to, context);
+                return true;
+            }
+        }
+        return false;
     }
 
-    /** 处理事件；可在回调中调用 transitionTo 进行状态切换。 */
-    public synchronized void handle(E event) {
-        Consumer<E> handler = handlers.get(current);
-        if (handler != null) {
-            handler.accept(event);
+    /**
+     * 更新当前任务，并在 tick 结束后检查是否有可用边触发转移。
+     *
+     * @return 本次 tick 是否发生了状态切换
+     */
+    public boolean tick(C context) {
+        Objects.requireNonNull(context, "context");
+        ensureStarted(context);
+
+        currentTask.tick(context);
+
+        for (Transition<C> transition : getOutgoingTransitions(currentTask)) {
+            if (transition.isTriggered(context, currentTask)) {
+                performTransition(transition.to, context);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void ensureStarted(C context) {
+        if (!started) {
+            currentTask.enter(context);
+            started = true;
         }
     }
 
-    /** 显式请求切换状态。返回 true 表示切换成功或已在目标状态。 */
-    public synchronized boolean transitionTo(S next, E cause) {
-        S from = current;
-        if (Objects.equals(from, next)) {
-            return true;
-        }
-        if (guard != null && !guard.canTransition(from, next, cause)) {
-            return false;
-        }
-        Consumer<E> exit = onExit.get(from);
-        if (exit != null) {
-            exit.accept(cause);
+    private List<Transition<C>> getOutgoingTransitions(Task<C> task) {
+        List<Transition<C>> outgoing = transitions.get(task);
+        return outgoing == null ? Collections.emptyList() : outgoing;
+    }
+
+    private void performTransition(Task<C> nextTask, C context) {
+        currentTask.exit(context);
+        currentTask = nextTask;
+        currentTask.enter(context);
+    }
+
+    private static final class Transition<C> {
+        private final Task<C> from;
+        private final Task<C> to;
+        private final Predicate<TransitionContext<C>> condition;
+
+        private Transition(Task<C> from, Task<C> to, Predicate<TransitionContext<C>> condition) {
+            this.from = from;
+            this.to = to;
+            this.condition = condition;
         }
 
-        current = next;
-
-        Consumer<E> enter = onEnter.get(next);
-        if (enter != null) {
-            enter.accept(cause);
+        private boolean isTriggered(C context, Task<C> currentTask) {
+            if (!Objects.equals(from, currentTask)) {
+                return false;
+            }
+            if (!currentTask.isFinished() && !currentTask.getType().canTransitionBeforeFinished()) {
+                return false;
+            }
+            return condition.test(new TransitionContext<>(context, currentTask, to));
         }
-        return true;
     }
 }
-
