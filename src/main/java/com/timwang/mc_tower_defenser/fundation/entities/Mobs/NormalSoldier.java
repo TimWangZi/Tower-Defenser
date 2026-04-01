@@ -27,8 +27,9 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * 普通士兵实体。
- * 目前是一个最小可运行的近战实体，后续可以继续接入国家阵营与动画状态机。
+ * 已停止注册，保留该类仅用于兼容旧逻辑与后续迁移。
  */
+@Deprecated
 public class NormalSoldier extends PathfinderMob implements GeoEntity {
     private static final String NATION_TAG = "NationBelongTo";
     private static final EntityDataAccessor<String> DATA_NATION_BELONG_TO =

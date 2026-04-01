@@ -1,13 +1,11 @@
 package com.timwang.mc_tower_defenser.fundation.entities;
 
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
-import com.timwang.mc_tower_defenser.fundation.entities.Mobs.NormalSoldier;
+import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -15,23 +13,23 @@ import java.util.function.Supplier;
 
 /**
  * 实体注册入口。
- * 当前仅注册普通士兵实体，并在属性创建事件里补充基础属性表。
+ * 这里注册可由工作方块招募和控制的市民实体。
  */
-@EventBusSubscriber(modid = MinecraftTowerDefenser.MODID)
 public class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, MinecraftTowerDefenser.MODID);
-
-    // 普通士兵当前按怪物分类注册，后续如果要受国家系统控制，可以从这里继续扩展。
-    public static final Supplier<EntityType<NormalSoldier>> NORMAL_SOLDIER =
-            ENTITIES.register("normal_soldier", () -> EntityType.Builder.of(NormalSoldier::new, MobCategory.MONSTER).build("normal_soldier"));
+    public static final Supplier<EntityType<CitizenEntity>> CITIZEN = ENTITIES.register(
+            "default_citizen",
+            () -> EntityType.Builder.of(CitizenEntity::new, MobCategory.CREATURE)
+                    .sized(0.6F, 1.95F)
+                    .build("default_citizen")
+    );
 
     public static void register(IEventBus eventBus) {
         ENTITIES.register(eventBus);
+        eventBus.addListener(ModEntities::registerAttributes);
     }
 
-    /** 为自定义实体补上属性定义，否则实体生成时会缺少属性表。 */
-    @SubscribeEvent
-    public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
-        event.put(NORMAL_SOLDIER.get(), NormalSoldier.createAttributes().build());
+    public static void registerAttributes(EntityAttributeCreationEvent event) {
+        event.put(CITIZEN.get(), CitizenEntity.createAttributes().build());
     }
 }

@@ -11,7 +11,7 @@ import software.bernie.geckolib.model.GeoModel;
  */
 public class NormalSoldierModel extends GeoModel<NormalSoldier> {
     private final ResourceLocation model = ResourceLocation.fromNamespaceAndPath(MinecraftTowerDefenser.MODID, "geo/test_soldier.geo.json");
-    private final ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(MinecraftTowerDefenser.MODID, "textures/test_text.png");
+    private final ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(MinecraftTowerDefenser.MODID, "textures/urban_core.png");
     private final ResourceLocation animation = ResourceLocation.fromNamespaceAndPath(MinecraftTowerDefenser.MODID, "animations/null");
 
     @Override

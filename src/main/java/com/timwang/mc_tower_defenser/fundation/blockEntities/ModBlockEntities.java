@@ -3,6 +3,7 @@ package com.timwang.mc_tower_defenser.fundation.blockEntities;
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import com.timwang.mc_tower_defenser.fundation.blocks.ModBlocks;
 import com.timwang.mc_tower_defenser.fundation.blockEntities.Core.UrbanCoreBlockEntities;
+import com.timwang.mc_tower_defenser.fundation.blockEntities.WorkBlock.FarmerWorkBlockEntities;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
@@ -22,6 +23,8 @@ public class ModBlockEntities {
     // 以下是方块实体注册
     public static final Supplier<BlockEntityType<UrbanCoreBlockEntities>> URBAN_CORE = BLOCK_ENTITYIES.register(
             "urban_core",() -> BlockEntityType.Builder.of(UrbanCoreBlockEntities::new, ModBlocks.URBAN_CORE.get()).build(null));
+    public static final Supplier<BlockEntityType<FarmerWorkBlockEntities>> FARMER_WORK = BLOCK_ENTITYIES.register(
+            "farmer_work", () -> BlockEntityType.Builder.of(FarmerWorkBlockEntities::new, ModBlocks.FARMER_WORK.get()).build(null));
 
     /** 挂到模组事件总线，完成方块实体类型注册。 */
     public static void register(IEventBus eventBus){ BLOCK_ENTITYIES.register(eventBus); }

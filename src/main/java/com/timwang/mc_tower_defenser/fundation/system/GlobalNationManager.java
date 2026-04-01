@@ -77,7 +77,11 @@ public class GlobalNationManager extends SavedData {
 
     // 创建新阵营并记录玩家归属
     public synchronized err_type createNation(String player_name, String nation_name) {
-        if (findNation(nation_name) != null) {
+        if (player_name == null || player_name.isBlank() || nation_name == null || nation_name.isBlank()) {
+            return err_type.NATION_CREATE_ALREADYHAVE;
+        }
+
+        if (hasNation(player_name) || findNation(nation_name) != null) {
             return err_type.NATION_CREATE_ALREADYHAVE;
         }
         NationManager new_nation = new NationManager(nation_name);
@@ -165,6 +169,58 @@ public class GlobalNationManager extends SavedData {
         }
 
         boolean changed = nation.registerTower(memberName, pos);
+        if (changed) {
+            setDirty();
+        }
+        return changed;
+    }
+
+    /** 向指定国家的工作图注册一个节点。 */
+    public synchronized boolean registerWorkNode(NationManager nation, BlockPos pos) {
+        if (nation == null || pos == null) {
+            return false;
+        }
+
+        boolean changed = nation.registerWorkNode(pos);
+        if (changed) {
+            setDirty();
+        }
+        return changed;
+    }
+
+    /** 从指定国家的工作图移除一个节点。 */
+    public synchronized boolean unregisterWorkNode(NationManager nation, BlockPos pos) {
+        if (nation == null || pos == null) {
+            return false;
+        }
+
+        boolean changed = nation.unregisterWorkNode(pos);
+        if (changed) {
+            setDirty();
+        }
+        return changed;
+    }
+
+    /** 在指定国家的工作图中新增一条有向边。 */
+    public synchronized boolean connectWorkNodes(NationManager nation, BlockPos from, BlockPos to) {
+        if (nation == null || from == null || to == null) {
+            return false;
+        }
+
+        boolean changed = nation.connectWorkNodes(from, to);
+        if (changed) {
+            setDirty();
+        }
+        return changed;
+    }
+
+    /** 从指定国家的工作图中删除一条有向边。 */
+    public synchronized boolean disconnectWorkNodes(NationManager nation, BlockPos from, BlockPos to) {
+        if (nation == null || from == null || to == null) {
+            return false;
+        }
+
+        boolean changed = nation.disconnectWorkNodes(from, to);
         if (changed) {
             setDirty();
         }

@@ -2,6 +2,7 @@ package com.timwang.mc_tower_defenser.fundation.blocks;
 
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import com.timwang.mc_tower_defenser.fundation.blocks.Core.UrbanCoreBlock;
+import com.timwang.mc_tower_defenser.fundation.blocks.WorkBlock.FarmerWorkBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -26,6 +27,14 @@ public class ModBlocks {
                     .explosionResistance(10.0f)
                     .sound(SoundType.GRAVEL)
                     .mapColor(MapColor.STONE).noOcclusion()));
+
+    public static final DeferredBlock<Block> FARMER_WORK = BLOCKS.register(
+            "farmer_work",
+            () -> new FarmerWorkBlock(BlockBehaviour.Properties.of()
+                    .destroyTime(2.0f)
+                    .explosionResistance(8.0f)
+                    .sound(SoundType.WOOD)
+                    .mapColor(MapColor.WOOD)));
 
     /** 挂到模组事件总线，完成 DeferredRegister 的正式注册。 */
     public static void register(IEventBus eventBus){BLOCKS.register(eventBus);}
