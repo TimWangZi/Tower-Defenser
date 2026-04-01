@@ -1,19 +1,27 @@
 package com.timwang.mc_tower_defenser.fundation.utils.ai.profession.task;
 
-import com.timwang.mc_tower_defenser.fundation.utils.Task;
-import com.timwang.mc_tower_defenser.fundation.utils.TaskType;
 import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.FarmerProfession;
 
+import java.util.function.Consumer;
+
 /**
- * 尝试获取食物任务骨架。
- * 当前不提供任何具体实现。
+ * 兼容原有命名的工作方块交互任务。
+ * 具体请求/投递内容通过 WorkBlockTask 提供的配置函数决定。
  */
-public class TryAcquireFoodTask extends Task<FarmerProfession> {
+public class TryAcquireFoodTask extends WorkBlockTask<FarmerProfession> {
     public TryAcquireFoodTask() {
-        super("try_acquire_food", TaskType.INTERRUPTIBLE);
+        super("try_acquire_food");
     }
 
     @Override
-    protected void onTick(FarmerProfession context) {
+    public TryAcquireFoodTask setRequestItemsCallback(Consumer<WorkBlockTaskContext<FarmerProfession>> callback) {
+        super.setRequestItemsCallback(callback);
+        return this;
+    }
+
+    @Override
+    public TryAcquireFoodTask setDeliverItemsCallback(Consumer<WorkBlockTaskContext<FarmerProfession>> callback) {
+        super.setDeliverItemsCallback(callback);
+        return this;
     }
 }

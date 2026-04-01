@@ -124,6 +124,21 @@ public class WorkGraphManager {
         return List.copyOf(outgoingEdges);
     }
 
+    public List<Edge> getIncomingEdges(BlockPos to) {
+        BlockPos normalized = normalize(to);
+        if (normalized == null) {
+            return List.of();
+        }
+
+        List<Edge> incomingEdges = new ArrayList<>();
+        for (Edge edge : this.edges) {
+            if (edge.getTo().equals(normalized)) {
+                incomingEdges.add(edge.copy());
+            }
+        }
+        return List.copyOf(incomingEdges);
+    }
+
     public WorkGraphManager copy() {
         return deserializeNBT(this.serializeNBT());
     }

@@ -3,26 +3,34 @@ package com.timwang.mc_tower_defenser.fundation.utils.ai.goal;
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
 import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.ProfessionBase;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 public class CitizenGoal extends Goal {
-    CitizenEntity owner;
-    ProfessionBase<? extends CitizenEntity,?> profession_base;
-    public void CitizenGoal(CitizenEntity owner, ProfessionBase<? extends CitizenEntity,?> profession_base) {
+    private final CitizenEntity owner;
+
+    public CitizenGoal(CitizenEntity owner) {
         this.owner = owner;
-        this.profession_base = profession_base;
     }
+
     @Override
     public boolean canUse() {
-        if (!(owner.level() instanceof ServerLevel) || !owner.hasNationBelongTo()) {
-            return false;
-        }else {
-            return true;
-        }
+        return getProfession() != null && owner.level() instanceof ServerLevel && owner.hasNationBelongTo();
     }
+
+    @Override
+    public boolean canContinueToUse() {
+        return canUse();
+    }
+
     @Override
     public void tick() {
-        profession_base.tick();
+        ProfessionBase<? extends CitizenEntity, ?> profession = getProfession();
+        if (profession != null) {
+            profession.tick();
+        }
+    }
+
+    private ProfessionBase<? extends CitizenEntity, ?> getProfession() {
+        return owner.getProfession();
     }
 }
