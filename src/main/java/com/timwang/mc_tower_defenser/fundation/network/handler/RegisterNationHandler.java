@@ -23,8 +23,26 @@ public class RegisterNationHandler {
             }
 
             ServerPlayer player = (ServerPlayer) context.player();
-            GlobalNationManager.get(player.getServer().overworld())
-                    .createNation(context.player().getGameProfile().getName(), data.nation_name());
+            GlobalNationManager nationManager = GlobalNationManager.get(player.getServer().overworld());
+            String playerName = context.player().getGameProfile().getName();
+            if (nationManager.hasNation(playerName)) {
+                player.displayClientMessage(net.minecraft.network.chat.Component.literal("你已经拥有国家，无法重复创建。"), true);
+                NationSyncService.syncPlayer(player);
+                return;
+            }
+
+            if (data.nation_name() == null || data.nation_name().isBlank()) {
+                player.displayClientMessage(net.minecraft.network.chat.Component.literal("国家名称不能为空。"), true);
+                return;
+            }
+
+            if (nationManager.getNationByName(data.nation_name()) != null) {
+                player.displayClientMessage(net.minecraft.network.chat.Component.literal("国家名称已存在。"), true);
+                NationSyncService.syncPlayer(player);
+                return;
+            }
+
+            nationManager.createNation(playerName, data.nation_name());
             NationSyncService.syncPlayer(player);
         });
     }

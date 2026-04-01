@@ -1,6 +1,7 @@
 package com.timwang.mc_tower_defenser.fundation.mixin;
 
 import com.timwang.mc_tower_defenser.fundation.gui.Screen.CreateCountryScreen;
+import com.timwang.mc_tower_defenser.fundation.network.ClientNationState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.InventoryMenu;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,6 +25,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(InventoryScreen.class)
 public class InventoryScreenInjector extends EffectRenderingInventoryScreen<InventoryMenu> implements RecipeUpdateListener{
+    @Unique
+    private Button minecraftTowerDefenser$createCountryButton;
+
     public InventoryScreenInjector(InventoryMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
     }
@@ -33,18 +38,32 @@ public class InventoryScreenInjector extends EffectRenderingInventoryScreen<Inve
     }
 
     /** 打开建国界面，并把当前界面作为返回目标传进去。 */
-    void onClickCreateCountryButton() {
+    @Unique
+    void minecraftTowerDefenser$onClickCreateCountryButton() {
+        if (!ClientNationState.isLoaded()) {
+            ClientNationState.requestSync();
+            return;
+        }
+
+        if (ClientNationState.hasNation()) {
+            return;
+        }
+
         Minecraft.getInstance().setScreen(new CreateCountryScreen(Minecraft.getInstance().screen));
     }
 
     @Inject(method = "init()V", at = @At("TAIL"))
     protected void injectInventoryScreen(CallbackInfo ci) {
+        if (!ClientNationState.isLoaded()) {
+            ClientNationState.requestSync();
+        }
+
         InventoryScreen screen = (InventoryScreen)(Object) this;
         // 在原版背包初始化完成后追加按钮，避免与原版控件布局互相覆盖。
-        Button customButton = Button.builder(
+        this.minecraftTowerDefenser$createCountryButton = Button.builder(
                         Component.literal("Create"), // TODO：添加国际化文本组件
                         button -> {
-                            onClickCreateCountryButton();
+                            minecraftTowerDefenser$onClickCreateCountryButton();
                         }
                 )
                 .pos(
@@ -53,7 +72,24 @@ public class InventoryScreenInjector extends EffectRenderingInventoryScreen<Inve
                 )
                 .size(60, 20) // 按钮宽、高
                 .build();
-        addRenderableWidget(customButton);
+        addRenderableWidget(this.minecraftTowerDefenser$createCountryButton);
+        this.minecraftTowerDefenser$refreshCreateCountryButton();
+    }
+
+    @Inject(method = "containerTick()V", at = @At("TAIL"))
+    private void minecraftTowerDefenser$updateCreateCountryButton(CallbackInfo ci) {
+        this.minecraftTowerDefenser$refreshCreateCountryButton();
+    }
+
+    @Unique
+    private void minecraftTowerDefenser$refreshCreateCountryButton() {
+        if (this.minecraftTowerDefenser$createCountryButton == null) {
+            return;
+        }
+
+        boolean visible = ClientNationState.isLoaded() && !ClientNationState.hasNation();
+        this.minecraftTowerDefenser$createCountryButton.visible = visible;
+        this.minecraftTowerDefenser$createCountryButton.active = visible;
     }
 
 

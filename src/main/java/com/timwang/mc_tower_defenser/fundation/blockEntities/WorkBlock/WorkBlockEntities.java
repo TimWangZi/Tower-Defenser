@@ -24,7 +24,7 @@ import java.util.List;
 * 动画与渲染需要在其子类中实现
 * */
 public class WorkBlockEntities extends BlockEntity {
-    private static final int STORAGE_SIZE = 27;
+    public static final int STORAGE_SIZE = 27;
     private static final String TYPE_TAG = "Type";
     private static final String NATION_TAG = "Nation";
 
@@ -48,6 +48,20 @@ public class WorkBlockEntities extends BlockEntity {
         } else {
             return false;
         }
+    }
+
+    public boolean unregisterWorkBlock(ServerLevel level) {
+        GlobalNationManager manager = GlobalNationManager.get(level);
+        NationManager nation = this.NATION.isBlank() ? manager.getNationByTerritory(getBlockPos()) : manager.getNationByName(this.NATION);
+        if (nation == null) {
+            return false;
+        }
+
+        boolean changed = manager.unregisterWorkNode(nation, getBlockPos());
+        if (changed) {
+            setChanged();
+        }
+        return changed;
     }
 
     public String getTYPE() {

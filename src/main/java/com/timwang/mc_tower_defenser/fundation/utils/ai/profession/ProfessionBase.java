@@ -25,6 +25,8 @@ public abstract class ProfessionBase<T extends PathfinderMob, P extends Professi
 
     protected abstract StateMachine<P> createStateMachine();
 
+    public abstract String getProfessionTypeId();
+
     /**
      * 此tick非彼tick,此处是Goal tick
      * 这里只在服务端执行，客户端不维护职业状态。

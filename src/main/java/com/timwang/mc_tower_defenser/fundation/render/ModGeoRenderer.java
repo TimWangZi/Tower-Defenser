@@ -2,7 +2,9 @@ package com.timwang.mc_tower_defenser.fundation.render;
 
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import com.timwang.mc_tower_defenser.fundation.blockEntities.ModBlockEntities;
+import com.timwang.mc_tower_defenser.fundation.entities.ModEntities;
 import com.timwang.mc_tower_defenser.fundation.render.Core.UrbanCoreRenderer;
+import com.timwang.mc_tower_defenser.fundation.render.Mobs.CitizenRender;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -18,5 +20,6 @@ public class ModGeoRenderer {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         MinecraftTowerDefenser.LOGGER.info("Registering Geckolib renderers");
         event.registerBlockEntityRenderer(ModBlockEntities.URBAN_CORE.get(), UrbanCoreRenderer::new);
+        event.registerEntityRenderer(ModEntities.CITIZEN.get(), CitizenRender::new);
     }
 }

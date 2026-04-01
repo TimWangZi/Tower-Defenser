@@ -13,19 +13,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 农民职业基础状态机。
+ * 农民职业状态机。
  * 默认流程为：采摘 -> 返回工作方块卸货/补给 -> 继续采摘。
  */
-public abstract class FarmerProfession extends ProfessionBase<CitizenEntity, FarmerProfession> {
+public class FarmerProfession extends ProfessionBase<CitizenEntity, FarmerProfession> {
     private final HarvestTask harvestTask;
     private final TryAcquireFoodTask returnToWorkBlockTask;
 
-    protected FarmerProfession(CitizenEntity parent, ServerLevel serverLevel) {
+    public FarmerProfession(CitizenEntity parent, ServerLevel serverLevel) {
         super(parent, serverLevel);
         this.harvestTask = new HarvestTask();
         this.returnToWorkBlockTask = new TryAcquireFoodTask()
                 .setDeliverItemsCallback(this::deliverItemsAtWorkBlock)
                 .setRequestItemsCallback(this::requestItemsAtWorkBlock);
+    }
+
+    @Override
+    public String getProfessionTypeId() {
+        return CitizenProfessionTypes.FARMER;
     }
 
     @Override

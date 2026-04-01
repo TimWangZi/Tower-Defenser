@@ -1,5 +1,6 @@
 package com.timwang.mc_tower_defenser.fundation.gui.Screen;
 
+import com.timwang.mc_tower_defenser.fundation.network.ClientNationState;
 import com.timwang.mc_tower_defenser.fundation.network.payloads.RegisterNationPayloads;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -34,6 +35,7 @@ public class CreateCountryScreen extends Screen {
 
     // 国家名称输入框
     private EditBox countryNameInput;
+    private Button createButton;
 
     // 上一个屏幕（用于返回）
     @Nullable
@@ -60,6 +62,10 @@ public class CreateCountryScreen extends Screen {
     @Override
     protected void init() {
         super.init();
+
+        if (!ClientNationState.isLoaded()) {
+            ClientNationState.requestSync();
+        }
         
         // 计算 GUI 面板的位置（屏幕居中）
         this.leftPos = (this.width - PANEL_WIDTH) / 2;
@@ -82,11 +88,11 @@ public class CreateCountryScreen extends Screen {
         this.addRenderableWidget(this.countryNameInput);
 
         // 创建"创建"按钮
-        this.addRenderableWidget(
-            Button.builder(Component.literal("创建"), (button) -> this.onClickCreate())
-                .pos(this.leftPos + 50, this.topPos + 170)   // 位置：面板内左下方
-                .size(60, 20)                               // 大小：60x20
-                .build()
+        this.createButton = this.addRenderableWidget(
+                Button.builder(Component.literal("创建"), (button) -> this.onClickCreate())
+                        .pos(this.leftPos + 50, this.topPos + 170)   // 位置：面板内左下方
+                        .size(60, 20)                               // 大小：60x20
+                        .build()
         );
 
         // 创建"取消"按钮
@@ -99,6 +105,7 @@ public class CreateCountryScreen extends Screen {
 
         // 设置焦点到输入框
         this.setInitialFocus(this.countryNameInput);
+        this.refreshCreateButtonState();
     }
     
     /**
@@ -108,7 +115,7 @@ public class CreateCountryScreen extends Screen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         // 绘制背景
-        //this.renderBg(guiGraphics);
+        this.renderBg(guiGraphics);
 
         // 调用父类渲染方法（渲染所有组件）
         super.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -129,6 +136,14 @@ public class CreateCountryScreen extends Screen {
             this.leftPos + 20,    // X 坐标
             this.topPos + 35,     // Y 坐标
             0xFFFFFF              // 颜色：白色
+        );
+
+        guiGraphics.drawString(
+                this.font,
+                this.getNationStatusText(),
+                this.leftPos + 20,
+                this.topPos + 85,
+                0xFFFFFF
         );
     }
 
@@ -189,6 +204,10 @@ public class CreateCountryScreen extends Screen {
      * 此方法在玩家点击"创建"按钮时被调用
      */
     private void onClickCreate() {
+        if (!ClientNationState.isLoaded() || ClientNationState.hasNation()) {
+            return;
+        }
+
         String countryName = this.countryNameInput.getValue();
 
         // 验证国家名称是否为空
@@ -221,7 +240,18 @@ public class CreateCountryScreen extends Screen {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        this.refreshCreateButtonState();
+    }
+
+    @Override
     public void onClose() {
+        if (this.minecraft != null && this.previousScreen != null) {
+            this.minecraft.setScreen(this.previousScreen);
+            return;
+        }
+
         super.onClose();
     }
 
@@ -254,5 +284,27 @@ public class CreateCountryScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    private void refreshCreateButtonState() {
+        if (this.createButton == null) {
+            return;
+        }
+
+        boolean canCreate = ClientNationState.isLoaded() && !ClientNationState.hasNation();
+        this.createButton.visible = canCreate;
+        this.createButton.active = canCreate;
+    }
+
+    private String getNationStatusText() {
+        if (!ClientNationState.isLoaded()) {
+            return "正在同步国家数据...";
+        }
+
+        if (ClientNationState.hasNation()) {
+            return "你已经拥有国家: " + ClientNationState.getNationName();
+        }
+
+        return "输入国家名称后点击创建。";
     }
 }

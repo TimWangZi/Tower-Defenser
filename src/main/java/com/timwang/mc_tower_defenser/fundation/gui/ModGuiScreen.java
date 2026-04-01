@@ -1,10 +1,17 @@
 package com.timwang.mc_tower_defenser.fundation.gui;
 
-import net.minecraft.client.Minecraft;
+import com.timwang.mc_tower_defenser.fundation.gui.Screen.FarmerWorkScreen;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 /**
- * GUI 层的占位入口。
- * 当前还没有共用的 Screen 注册逻辑，保留这个类作为后续整理 GUI 时的挂载点。
+ * GUI 层注册入口。
+ * 统一把菜单类型和客户端屏幕绑定起来。
  */
-public class ModGuiScreen {
+public final class ModGuiScreen {
+    private ModGuiScreen() {
+    }
+
+    public static void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(ModGuiMenu.FARMER_WORK_MENU.get(), FarmerWorkScreen::new);
+    }
 }

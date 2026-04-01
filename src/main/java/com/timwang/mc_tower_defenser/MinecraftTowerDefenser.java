@@ -3,6 +3,7 @@ package com.timwang.mc_tower_defenser;
 import com.timwang.mc_tower_defenser.fundation.blocks.ModBlocks;
 import com.timwang.mc_tower_defenser.fundation.blockEntities.ModBlockEntities;
 import com.timwang.mc_tower_defenser.fundation.entities.ModEntities;
+import com.timwang.mc_tower_defenser.fundation.gui.ModGuiMenu;
 import com.timwang.mc_tower_defenser.fundation.items.ModItems;
 import com.timwang.mc_tower_defenser.fundation.network.ModNetwork;
 import org.slf4j.Logger;
@@ -84,6 +85,7 @@ public class MinecraftTowerDefenser {
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModEntities.register(modEventBus);
+        ModGuiMenu.register(modEventBus);
         ModItems.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);

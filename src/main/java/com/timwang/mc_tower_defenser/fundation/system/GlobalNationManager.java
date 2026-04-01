@@ -77,7 +77,11 @@ public class GlobalNationManager extends SavedData {
 
     // 创建新阵营并记录玩家归属
     public synchronized err_type createNation(String player_name, String nation_name) {
-        if (findNation(nation_name) != null) {
+        if (player_name == null || player_name.isBlank() || nation_name == null || nation_name.isBlank()) {
+            return err_type.NATION_CREATE_ALREADYHAVE;
+        }
+
+        if (hasNation(player_name) || findNation(nation_name) != null) {
             return err_type.NATION_CREATE_ALREADYHAVE;
         }
         NationManager new_nation = new NationManager(nation_name);
