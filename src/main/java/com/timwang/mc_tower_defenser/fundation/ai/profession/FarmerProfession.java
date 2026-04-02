@@ -1,24 +1,34 @@
-package com.timwang.mc_tower_defenser.fundation.utils.ai.profession;
+package com.timwang.mc_tower_defenser.fundation.ai.profession;
 
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
 import com.timwang.mc_tower_defenser.fundation.utils.StateMachine;
-import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.task.HarvestTask;
-import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.task.TryAcquireFoodTask;
-import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.task.WorkBlockTaskContext;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.task.EscapeTask;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.task.HarvestTask;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.task.TryAcquireFoodTask;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.task.WalkAroundTask;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.task.WorkBlockTaskContext;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 农民职业状态机。
- * 默认流程为：采摘 -> 返回工作方块卸货/补给 -> 继续采摘。
+ * 默认流程为：采摘 -> 返回工作方块卸货/补给 -> 随机闲逛或继续采摘。
  */
 public class FarmerProfession extends ProfessionBase<CitizenEntity, FarmerProfession> {
+    private static final float WALK_AROUND_CHANCE = 0.35F;
+
     private final HarvestTask harvestTask;
     private final TryAcquireFoodTask returnToWorkBlockTask;
+    private final WalkAroundTask walkAroundTask;
+    private final EscapeTask escapeTask;
+    private int lastConsumedHurtByMobTimestamp = -1;
 
     public FarmerProfession(CitizenEntity parent, ServerLevel serverLevel) {
         super(parent, serverLevel);
@@ -26,6 +36,8 @@ public class FarmerProfession extends ProfessionBase<CitizenEntity, FarmerProfes
         this.returnToWorkBlockTask = new TryAcquireFoodTask()
                 .setDeliverItemsCallback(this::deliverItemsAtWorkBlock)
                 .setRequestItemsCallback(this::requestItemsAtWorkBlock);
+        this.walkAroundTask = new WalkAroundTask();
+        this.escapeTask = new EscapeTask();
     }
 
     @Override
@@ -36,8 +48,17 @@ public class FarmerProfession extends ProfessionBase<CitizenEntity, FarmerProfes
     @Override
     protected StateMachine<FarmerProfession> createStateMachine() {
         return new StateMachine<>(this.harvestTask)
+                .addTask(this.returnToWorkBlockTask)
+                .addTask(this.walkAroundTask)
+                .addTask(this.escapeTask)
+                .addTransition(this.harvestTask, this.escapeTask, transition -> shouldEscape())
                 .addTransition(this.harvestTask, this.returnToWorkBlockTask, transition -> this.harvestTask.isFinished())
-                .addTransition(this.returnToWorkBlockTask, this.harvestTask, transition -> this.returnToWorkBlockTask.isFinished());
+                .addTransition(this.returnToWorkBlockTask, this.escapeTask, transition -> shouldEscape())
+                .addTransition(this.returnToWorkBlockTask, this.walkAroundTask, transition -> this.returnToWorkBlockTask.isFinished() && shouldWalkAround())
+                .addTransition(this.returnToWorkBlockTask, this.harvestTask, transition -> this.returnToWorkBlockTask.isFinished())
+                .addTransition(this.walkAroundTask, this.escapeTask, transition -> shouldEscape())
+                .addTransition(this.walkAroundTask, this.returnToWorkBlockTask, transition -> this.walkAroundTask.isFinished())
+                .addTransition(this.escapeTask, this.returnToWorkBlockTask, transition -> this.escapeTask.isFinished());
     }
 
     protected HarvestTask getHarvestTask() {
@@ -46,6 +67,18 @@ public class FarmerProfession extends ProfessionBase<CitizenEntity, FarmerProfes
 
     protected TryAcquireFoodTask getReturnToWorkBlockTask() {
         return this.returnToWorkBlockTask;
+    }
+
+    protected WalkAroundTask getWalkAroundTask() {
+        return this.walkAroundTask;
+    }
+
+    protected EscapeTask getEscapeTask() {
+        return this.escapeTask;
+    }
+
+    protected boolean shouldWalkAround() {
+        return this.getParent().getRandom().nextFloat() < WALK_AROUND_CHANCE;
     }
 
     /**
@@ -122,5 +155,40 @@ public class FarmerProfession extends ProfessionBase<CitizenEntity, FarmerProfes
         }
 
         return count;
+    }
+
+    protected boolean shouldEscape() {
+        return resolvePendingEscapeSourcePos() != null;
+    }
+
+    @Nullable
+    public Vec3 consumeEscapeSourcePos() {
+        LivingEntity attacker = getParent().getLastHurtByMob();
+        if (attacker == null) {
+            return null;
+        }
+
+        int hurtTimestamp = getParent().getLastHurtByMobTimestamp();
+        if (hurtTimestamp <= this.lastConsumedHurtByMobTimestamp) {
+            return null;
+        }
+
+        this.lastConsumedHurtByMobTimestamp = hurtTimestamp;
+        return attacker.position();
+    }
+
+    @Nullable
+    private Vec3 resolvePendingEscapeSourcePos() {
+        LivingEntity attacker = getParent().getLastHurtByMob();
+        if (attacker == null) {
+            return null;
+        }
+
+        int hurtTimestamp = getParent().getLastHurtByMobTimestamp();
+        if (hurtTimestamp <= this.lastConsumedHurtByMobTimestamp) {
+            return null;
+        }
+
+        return attacker.position();
     }
 }

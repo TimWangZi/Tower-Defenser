@@ -1,4 +1,4 @@
-package com.timwang.mc_tower_defenser.fundation.utils.ai.goal;
+package com.timwang.mc_tower_defenser.fundation.ai.goal;
 
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.NormalSoldier;
 import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;

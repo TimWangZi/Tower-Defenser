@@ -1,4 +1,4 @@
-package com.timwang.mc_tower_defenser.fundation.utils.ai.profession;
+package com.timwang.mc_tower_defenser.fundation.ai.profession;
 
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
 import net.minecraft.server.level.ServerLevel;

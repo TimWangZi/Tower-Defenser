@@ -1,7 +1,7 @@
-package com.timwang.mc_tower_defenser.fundation.utils.ai.goal;
+package com.timwang.mc_tower_defenser.fundation.ai.goal;
 
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
-import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.ProfessionBase;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.ProfessionBase;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.Goal;
 

@@ -1,6 +1,6 @@
-package com.timwang.mc_tower_defenser.fundation.utils.ai.profession.task;
+package com.timwang.mc_tower_defenser.fundation.ai.profession.task;
 
-import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.FarmerProfession;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.FarmerProfession;
 
 import java.util.function.Consumer;
 

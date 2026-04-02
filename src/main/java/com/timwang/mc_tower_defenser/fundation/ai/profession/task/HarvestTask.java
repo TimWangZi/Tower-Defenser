@@ -1,9 +1,9 @@
-package com.timwang.mc_tower_defenser.fundation.utils.ai.profession.task;
+package com.timwang.mc_tower_defenser.fundation.ai.profession.task;
 
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
 import com.timwang.mc_tower_defenser.fundation.utils.Task;
 import com.timwang.mc_tower_defenser.fundation.utils.TaskType;
-import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.FarmerProfession;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.FarmerProfession;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -151,6 +151,7 @@ public class HarvestTask extends Task<FarmerProfession> {
         BlockEntity blockEntity = state.hasBlockEntity() ? level.getBlockEntity(target) : null;
         List<ItemStack> drops = new ArrayList<>(Block.getDrops(state, level, target, blockEntity, citizen, rightHand.copy()));
         consumeReplantCost(cropBlock, level, target, state, drops);
+
 
         citizen.swing(InteractionHand.MAIN_HAND);
         if (!level.setBlock(target, cropBlock.getStateForAge(0), Block.UPDATE_ALL)) {

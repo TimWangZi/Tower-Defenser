@@ -3,7 +3,7 @@ package com.timwang.mc_tower_defenser.fundation.blockEntities.WorkBlock;
 import com.timwang.mc_tower_defenser.fundation.blockEntities.ModBlockEntities;
 import com.timwang.mc_tower_defenser.fundation.entities.ModEntities;
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
-import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.FarmerProfession;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.FarmerProfession;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;

@@ -1,8 +1,8 @@
-package com.timwang.mc_tower_defenser.fundation.utils.ai.profession.task;
+package com.timwang.mc_tower_defenser.fundation.ai.profession.task;
 
 import com.timwang.mc_tower_defenser.fundation.blockEntities.WorkBlock.WorkBlockEntities;
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
-import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.ProfessionBase;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.ProfessionBase;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
