@@ -1,6 +1,7 @@
 package com.timwang.mc_tower_defenser.fundation.gui;
 
 import com.timwang.mc_tower_defenser.fundation.gui.Screen.FarmerWorkScreen;
+import com.timwang.mc_tower_defenser.fundation.gui.Screen.SoldierWorkScreen;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 /**
@@ -13,5 +14,6 @@ public final class ModGuiScreen {
 
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModGuiMenu.FARMER_WORK_MENU.get(), FarmerWorkScreen::new);
+        event.register(ModGuiMenu.SOLDIER_WORK_MENU.get(), SoldierWorkScreen::new);
     }
 }

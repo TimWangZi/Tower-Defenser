@@ -1,4 +1,6 @@
-package com.timwang.mc_tower_defenser.fundation.utils;
+package com.timwang.mc_tower_defenser.fundation.ai.profession.task;
+
+import com.timwang.mc_tower_defenser.fundation.utils.TaskType;
 
 import java.util.Objects;
 

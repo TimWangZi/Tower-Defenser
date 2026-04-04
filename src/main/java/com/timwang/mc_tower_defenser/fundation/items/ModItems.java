@@ -19,6 +19,7 @@ public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MinecraftTowerDefenser.MODID);
     public static final Supplier<BlockItem> URBANCORE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("urban_core", ModBlocks.URBAN_CORE);
     public static final Supplier<BlockItem> FARMER_WORK_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("farmer_work", ModBlocks.FARMER_WORK);
+    public static final Supplier<BlockItem> SOLDIER_WORK_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("soldier_work", ModBlocks.SOLDIER_WORK);
 
 
     /** 挂到模组事件总线，完成物品注册。 */

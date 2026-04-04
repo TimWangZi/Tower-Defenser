@@ -1,4 +1,6 @@
 {
   "gui.minecraft_tower_defenser.farmer_work": "农民工作方块",
-  "block.minecraft_tower_defenser.farmer_work": "农民工作方块"
+  "block.minecraft_tower_defenser.farmer_work": "农民工作方块",
+  "gui.minecraft_tower_defenser.soldier_work": "士兵工作方块",
+  "block.minecraft_tower_defenser.soldier_work": "士兵工作方块"
 }

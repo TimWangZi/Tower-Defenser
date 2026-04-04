@@ -1,6 +1,6 @@
 package com.timwang.mc_tower_defenser.fundation.gui.Backend;
 
-import com.timwang.mc_tower_defenser.fundation.blockEntities.WorkBlock.FarmerWorkBlockEntities;
+import com.timwang.mc_tower_defenser.fundation.blockEntities.WorkBlock.SoldierWorkBlockEntities;
 import com.timwang.mc_tower_defenser.fundation.blockEntities.WorkBlock.WorkBlockEntities;
 import com.timwang.mc_tower_defenser.fundation.blocks.ModBlocks;
 import com.timwang.mc_tower_defenser.fundation.gui.ModGuiMenu;
@@ -14,13 +14,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * 农民工作方块菜单。
+ * 士兵工作方块菜单。
  * 负责同步 27 格库存，并通过菜单按钮触发服务端招募逻辑。
  */
-public class FarmerWorkMenu extends AbstractContainerMenu {
+public class SoldierWorkMenu extends AbstractContainerMenu {
     public static final int RECRUIT_BUTTON_ID = 0;
 
     private static final int WORK_SLOT_COLUMNS = 9;
@@ -35,31 +36,32 @@ public class FarmerWorkMenu extends AbstractContainerMenu {
     private static final int PLAYER_INV_X = 8;
     private static final int PLAYER_INV_Y = 104;
     private static final int HOTBAR_Y = 162;
+    private static final int EMERALD_COST = 8;
 
     private final Container container;
     @Nullable
-    private final FarmerWorkBlockEntities farmerWorkBlock;
+    private final SoldierWorkBlockEntities soldierWorkBlock;
     private final ContainerLevelAccess access;
 
-    public FarmerWorkMenu(int containerId, Inventory playerInventory) {
+    public SoldierWorkMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, new SimpleContainer(WORK_SLOT_COUNT), null, ContainerLevelAccess.NULL);
     }
 
-    public FarmerWorkMenu(int containerId, Inventory playerInventory, FarmerWorkBlockEntities farmerWorkBlock, ContainerLevelAccess access) {
-        this(containerId, playerInventory, farmerWorkBlock.getInventory(), farmerWorkBlock, access);
+    public SoldierWorkMenu(int containerId, Inventory playerInventory, SoldierWorkBlockEntities soldierWorkBlock, ContainerLevelAccess access) {
+        this(containerId, playerInventory, soldierWorkBlock.getInventory(), soldierWorkBlock, access);
     }
 
-    private FarmerWorkMenu(
+    private SoldierWorkMenu(
             int containerId,
             Inventory playerInventory,
             Container container,
-            @Nullable FarmerWorkBlockEntities farmerWorkBlock,
+            @Nullable SoldierWorkBlockEntities soldierWorkBlock,
             ContainerLevelAccess access
     ) {
-        super(ModGuiMenu.FARMER_WORK_MENU.get(), containerId);
+        super(ModGuiMenu.SOLDIER_WORK_MENU.get(), containerId);
         checkContainerSize(container, WORK_SLOT_COUNT);
         this.container = container;
-        this.farmerWorkBlock = farmerWorkBlock;
+        this.soldierWorkBlock = soldierWorkBlock;
         this.access = access;
         this.container.startOpen(playerInventory.player);
 
@@ -94,16 +96,44 @@ public class FarmerWorkMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (id != RECRUIT_BUTTON_ID || this.farmerWorkBlock == null || !(player.level() instanceof ServerLevel serverLevel)) {
+        if (id != RECRUIT_BUTTON_ID || this.soldierWorkBlock == null || !(player.level() instanceof ServerLevel serverLevel)) {
             return false;
         }
 
-        if (this.farmerWorkBlock.recruitCitizen(serverLevel) == null) {
-            player.displayClientMessage(Component.literal("招募失败"), true);
+        int emeraldCount = 0;
+        for (int slot = 0; slot < WORK_SLOT_COUNT; slot++) {
+            ItemStack stack = this.container.getItem(slot);
+            if (stack.is(Items.EMERALD)) {
+                emeraldCount += stack.getCount();
+            }
+        }
+        if (emeraldCount < EMERALD_COST) {
+            player.displayClientMessage(Component.literal("招募失败:没有足够绿宝石"), true);
             return false;
         }
 
-        player.displayClientMessage(Component.literal("已招募农民"), true);
+        int remaining = EMERALD_COST;
+        for (int slot = 0; slot < WORK_SLOT_COUNT && remaining > 0; slot++) {
+            ItemStack stack = this.container.getItem(slot);
+            if (stack.is(Items.EMERALD)) {
+                int consumeCount = Math.min(stack.getCount(), remaining);
+                this.container.removeItem(slot, consumeCount);
+                remaining -= consumeCount;
+            }
+        }
+
+        /*if (remaining > 0) {
+            player.displayClientMessage(Component.literal("招募失败:扣除绿宝石失败"), true);
+            return false;
+        }*/
+        this.container.setChanged();
+        this.broadcastChanges();
+
+        if ((this.soldierWorkBlock.recruitCitizen(serverLevel) == null)) {
+            player.displayClientMessage(Component.literal("招募失败:不满足生成条件"), true);
+            return false;
+        }
+        player.displayClientMessage(Component.literal("已招募士兵"), true);
         return true;
     }
 
@@ -152,7 +182,7 @@ public class FarmerWorkMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return stillValid(this.access, player, ModBlocks.FARMER_WORK.get());
+        return stillValid(this.access, player, ModBlocks.SOLDIER_WORK.get());
     }
 
     @Override

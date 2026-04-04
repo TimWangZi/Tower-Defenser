@@ -1,8 +1,7 @@
 package com.timwang.mc_tower_defenser.fundation.ai.profession.task;
 
-import com.timwang.mc_tower_defenser.fundation.ai.profession.FarmerProfession;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.ProfessionBase;
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
-import com.timwang.mc_tower_defenser.fundation.utils.Task;
 import com.timwang.mc_tower_defenser.fundation.utils.TaskType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
  * 闲逛任务。
  * 市民会围绕当前工作方块附近随机走动一段时间，结束后回到返回工作方块流程。
  */
-public class WalkAroundTask extends Task<FarmerProfession> {
+public class WalkAroundTask<P extends ProfessionBase<CitizenEntity, P>> extends Task<P> {
     private static final int MIN_WALK_DURATION_TICKS = 80;
     private static final int MAX_EXTRA_WALK_DURATION_TICKS = 80;
     private static final int WALK_HORIZONTAL_RANGE = 6;
@@ -24,6 +23,7 @@ public class WalkAroundTask extends Task<FarmerProfession> {
     private static final double MIN_TARGET_REACH = 1.25D;
 
     private int remainingTicks;
+    private boolean onInterrupt = false;
     @Nullable
     private BlockPos currentTarget;
 
@@ -32,14 +32,14 @@ public class WalkAroundTask extends Task<FarmerProfession> {
     }
 
     @Override
-    protected void onEnter(FarmerProfession context) {
+    protected void onEnter(P context) {
         CitizenEntity citizen = context.getParent();
         this.remainingTicks = MIN_WALK_DURATION_TICKS + citizen.getRandom().nextInt(MAX_EXTRA_WALK_DURATION_TICKS + 1);
         this.currentTarget = null;
     }
 
     @Override
-    protected void onTick(FarmerProfession context) {
+    protected void onTick(P context) {
         CitizenEntity citizen = context.getParent();
 
         if (this.remainingTicks-- <= 0) {
@@ -60,7 +60,7 @@ public class WalkAroundTask extends Task<FarmerProfession> {
     }
 
     @Override
-    protected void onExit(FarmerProfession context) {
+    protected void onExit(P context) {
         clearNavigationState(context.getParent());
         super.onExit(context);
     }

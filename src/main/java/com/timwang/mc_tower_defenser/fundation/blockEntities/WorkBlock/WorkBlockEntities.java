@@ -1,5 +1,8 @@
 package com.timwang.mc_tower_defenser.fundation.blockEntities.WorkBlock;
 
+import com.timwang.mc_tower_defenser.fundation.ai.profession.ProfessionBase;
+import com.timwang.mc_tower_defenser.fundation.entities.ModEntities;
+import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
 import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;
 import com.timwang.mc_tower_defenser.fundation.system.NationManager;
 import net.minecraft.core.BlockPos;
@@ -15,15 +18,16 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 /*
 * 工作方块基类
-* 包含关系管理，招募，注册等
+* 包含关系管理、招募与库存流转
 * 动画与渲染需要在其子类中实现
 * */
-public class WorkBlockEntities extends BlockEntity {
+public abstract class WorkBlockEntities extends BlockEntity {
     public static final int STORAGE_SIZE = 27;
     private static final String TYPE_TAG = "Type";
     private static final String NATION_TAG = "Nation";
@@ -75,6 +79,49 @@ public class WorkBlockEntities extends BlockEntity {
     public SimpleContainer getInventory() {
         return inventory;
     }
+
+    /**
+     * 统一处理市民招募流程，子类只需要提供职业实例。
+     */
+    @Nullable
+    public CitizenEntity recruitCitizen(ServerLevel level) {
+        if (level == null || getNationName().isBlank() || !canRecruitCitizen(level)) {
+            return null;
+        }
+
+        CitizenEntity citizen = ModEntities.CITIZEN.get().create(level);
+        if (citizen == null) {
+            return null;
+        }
+
+        BlockPos spawnPos = resolveCitizenSpawnPos(level);
+        citizen.moveTo(spawnPos.getX() + 0.5D, spawnPos.getY(), spawnPos.getZ() + 0.5D, level.random.nextFloat() * 360.0F, 0.0F);
+        if (!level.noCollision(citizen)) {
+            return null;
+        }
+
+        citizen.bindWorkBlock(getBlockPos());
+        citizen.installProfession(createProfession(citizen, level));
+        citizen.setPersistenceRequired();
+        if (!level.addFreshEntity(citizen)) {
+            return null;
+        }
+
+        return citizen;
+    }
+
+    /**
+     * 子类可覆写招募限制，例如人口、资源或科技条件。
+     */
+    protected boolean canRecruitCitizen(ServerLevel level) {
+        return true;
+    }
+
+    protected BlockPos resolveCitizenSpawnPos(ServerLevel level) {
+        return getBlockPos().above();
+    }
+
+    protected abstract ProfessionBase<? extends CitizenEntity, ?> createProfession(CitizenEntity citizen, ServerLevel level);
 
     /**
      * 从工作方块中提取指定物品并放入目标容器。

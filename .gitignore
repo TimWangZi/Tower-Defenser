@@ -12,6 +12,7 @@ build/
 out/
 !**/src/**/out/
 
+.gradle-user-home
 .run/
 run-client-a/
 run-client-b/

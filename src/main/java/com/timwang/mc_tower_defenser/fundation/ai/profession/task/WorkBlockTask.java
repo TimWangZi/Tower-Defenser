@@ -5,7 +5,6 @@ import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
 import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;
 import com.timwang.mc_tower_defenser.fundation.system.NationManager;
 import com.timwang.mc_tower_defenser.fundation.system.work.Edge;
-import com.timwang.mc_tower_defenser.fundation.utils.Task;
 import com.timwang.mc_tower_defenser.fundation.utils.TaskType;
 import com.timwang.mc_tower_defenser.fundation.ai.profession.ProfessionBase;
 import net.minecraft.core.BlockPos;

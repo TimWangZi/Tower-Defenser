@@ -4,6 +4,8 @@
   "item.minecrafttowerdefenser.example_item": "Example Item",
   "gui.minecraft_tower_defenser.farmer_work": "Farmer Workstation",
   "block.minecraft_tower_defenser.farmer_work": "Farmer Workstation",
+  "gui.minecraft_tower_defenser.soldier_work": "Soldier Workstation",
+  "block.minecraft_tower_defenser.soldier_work": "Soldier Workstation",
 
   "minecrafttowerdefenser.configuration.title": "Minecraft Tower Defenser Configs",
   "minecrafttowerdefenser.configuration.section.minecrafttowerdefenser.common.toml": "Minecraft Tower Defenser Configs",

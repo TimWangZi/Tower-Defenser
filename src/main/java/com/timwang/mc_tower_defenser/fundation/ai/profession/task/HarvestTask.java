@@ -1,7 +1,6 @@
 package com.timwang.mc_tower_defenser.fundation.ai.profession.task;
 
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
-import com.timwang.mc_tower_defenser.fundation.utils.Task;
 import com.timwang.mc_tower_defenser.fundation.utils.TaskType;
 import com.timwang.mc_tower_defenser.fundation.ai.profession.FarmerProfession;
 import net.minecraft.core.BlockPos;

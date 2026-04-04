@@ -4,8 +4,8 @@ import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
 import com.timwang.mc_tower_defenser.fundation.utils.StateMachine;
 import com.timwang.mc_tower_defenser.fundation.ai.profession.task.EscapeTask;
 import com.timwang.mc_tower_defenser.fundation.ai.profession.task.HarvestTask;
-import com.timwang.mc_tower_defenser.fundation.ai.profession.task.TryAcquireFoodTask;
 import com.timwang.mc_tower_defenser.fundation.ai.profession.task.WalkAroundTask;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.task.WorkBlockTask;
 import com.timwang.mc_tower_defenser.fundation.ai.profession.task.WorkBlockTaskContext;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,18 +25,18 @@ public class FarmerProfession extends ProfessionBase<CitizenEntity, FarmerProfes
     private static final float WALK_AROUND_CHANCE = 0.35F;
 
     private final HarvestTask harvestTask;
-    private final TryAcquireFoodTask returnToWorkBlockTask;
-    private final WalkAroundTask walkAroundTask;
+    private final WorkBlockTask<FarmerProfession> returnToWorkBlockTask;
+    private final WalkAroundTask<FarmerProfession> walkAroundTask;
     private final EscapeTask escapeTask;
     private int lastConsumedHurtByMobTimestamp = -1;
 
     public FarmerProfession(CitizenEntity parent, ServerLevel serverLevel) {
         super(parent, serverLevel);
         this.harvestTask = new HarvestTask();
-        this.returnToWorkBlockTask = new TryAcquireFoodTask()
+        this.returnToWorkBlockTask = new WorkBlockTask<FarmerProfession>("try_acquire_food")
                 .setDeliverItemsCallback(this::deliverItemsAtWorkBlock)
                 .setRequestItemsCallback(this::requestItemsAtWorkBlock);
-        this.walkAroundTask = new WalkAroundTask();
+        this.walkAroundTask = new WalkAroundTask<>();
         this.escapeTask = new EscapeTask();
     }
 
@@ -65,11 +65,11 @@ public class FarmerProfession extends ProfessionBase<CitizenEntity, FarmerProfes
         return this.harvestTask;
     }
 
-    protected TryAcquireFoodTask getReturnToWorkBlockTask() {
+    protected WorkBlockTask<FarmerProfession> getReturnToWorkBlockTask() {
         return this.returnToWorkBlockTask;
     }
 
-    protected WalkAroundTask getWalkAroundTask() {
+    protected WalkAroundTask<FarmerProfession> getWalkAroundTask() {
         return this.walkAroundTask;
     }
 
