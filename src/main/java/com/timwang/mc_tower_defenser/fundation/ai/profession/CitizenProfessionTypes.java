@@ -1,4 +1,4 @@
-package com.timwang.mc_tower_defenser.fundation.utils.ai.profession;
+package com.timwang.mc_tower_defenser.fundation.ai.profession;
 
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
 import net.minecraft.server.level.ServerLevel;
@@ -10,15 +10,19 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class CitizenProfessionTypes {
     public static final String FARMER = "farmer";
-    private static final String LEGACY_DEFAULT_FARMER = "default_farmer";
+    public static final String SOLDIER = "soldier";
+    //private static final String LEGACY_DEFAULT_FARMER = "default_farmer";
 
     private CitizenProfessionTypes() {
     }
 
     @Nullable
     public static ProfessionBase<? extends CitizenEntity, ?> create(String professionTypeId, CitizenEntity citizen, ServerLevel level) {
-        if (FARMER.equals(professionTypeId) || LEGACY_DEFAULT_FARMER.equals(professionTypeId)) {
+        if (FARMER.equals(professionTypeId)) {
             return new FarmerProfession(citizen, level);
+        }
+        if (SOLDIER.equals(professionTypeId)) {
+            return new SoldierProfession(citizen, level);
         }
 
         return null;

@@ -313,7 +313,7 @@ public class GlobalNationManager extends SavedData {
         return tag;
     }
 
-    enum err_type {
+    public enum err_type {
         NATION_CREATE_ALREADYHAVE,
         NATION_CREATE_SUCCESS,
         NATION_CANNOT_FIND,

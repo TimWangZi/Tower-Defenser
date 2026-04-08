@@ -3,6 +3,7 @@ package com.timwang.mc_tower_defenser.fundation.gui;
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import com.timwang.mc_tower_defenser.fundation.gui.Backend.CreateCountryMenu;
 import com.timwang.mc_tower_defenser.fundation.gui.Backend.FarmerWorkMenu;
+import com.timwang.mc_tower_defenser.fundation.gui.Backend.SoldierWorkMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.IEventBus;
@@ -24,6 +25,10 @@ public class ModGuiMenu {
     public static final Supplier<MenuType<FarmerWorkMenu>> FARMER_WORK_MENU = MENU_TYPES.register(
             "farmer_work_menu",
             () -> IMenuTypeExtension.create((containerId, playerInventory, ignored) -> new FarmerWorkMenu(containerId, playerInventory))
+    );
+    public static final Supplier<MenuType<SoldierWorkMenu>> SOLDIER_WORK_MENU = MENU_TYPES.register(
+            "soldier_work_menu",
+            () -> IMenuTypeExtension.create((containerId, playerInventory, ignored) -> new SoldierWorkMenu(containerId, playerInventory))
     );
 
     public static void register(IEventBus eventBus) {

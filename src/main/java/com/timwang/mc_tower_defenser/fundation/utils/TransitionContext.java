@@ -1,5 +1,7 @@
 package com.timwang.mc_tower_defenser.fundation.utils;
 
+import com.timwang.mc_tower_defenser.fundation.ai.profession.task.Task;
+
 /**
  * 传给状态边 lambda 的上下文对象。
  * lambda 可以从这里读取运行时上下文，以及当前 / 目标任务。

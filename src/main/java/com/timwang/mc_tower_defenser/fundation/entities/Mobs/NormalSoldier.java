@@ -3,7 +3,7 @@ package com.timwang.mc_tower_defenser.fundation.entities.Mobs;
 import com.timwang.mc_tower_defenser.MinecraftTowerDefenser;
 import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;
 import com.timwang.mc_tower_defenser.fundation.system.NationManager;
-import com.timwang.mc_tower_defenser.fundation.utils.ai.goal.AttackOtherGoal;
+import com.timwang.mc_tower_defenser.fundation.ai.goal.AttackOtherGoal;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;

@@ -1,8 +1,8 @@
 package com.timwang.mc_tower_defenser.fundation.entities.Mobs;
 
-import com.timwang.mc_tower_defenser.fundation.utils.ai.goal.CitizenGoal;
-import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.CitizenProfessionTypes;
-import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.ProfessionBase;
+import com.timwang.mc_tower_defenser.fundation.ai.goal.CitizenGoal;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.CitizenProfessionTypes;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.ProfessionBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -12,6 +12,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -40,13 +41,15 @@ public class CitizenEntity extends PathfinderMob implements InventoryCarrier {
         return PathfinderMob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
-                .add(Attributes.FOLLOW_RANGE, 24.0D);
+                .add(Attributes.FOLLOW_RANGE, 24.0D)
+                .add(Attributes.ATTACK_DAMAGE, 1.0D);
     }
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(0, new CitizenGoal(this));
+        this.goalSelector.addGoal(0, new FloatGoal(this));
     }
 
     public void installProfession(ProfessionBase<? extends CitizenEntity, ?> profession) {

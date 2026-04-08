@@ -1,13 +1,12 @@
-package com.timwang.mc_tower_defenser.fundation.utils.ai.profession.task;
+package com.timwang.mc_tower_defenser.fundation.ai.profession.task;
 
 import com.timwang.mc_tower_defenser.fundation.blockEntities.WorkBlock.WorkBlockEntities;
 import com.timwang.mc_tower_defenser.fundation.entities.Mobs.CitizenEntity;
 import com.timwang.mc_tower_defenser.fundation.system.GlobalNationManager;
 import com.timwang.mc_tower_defenser.fundation.system.NationManager;
 import com.timwang.mc_tower_defenser.fundation.system.work.Edge;
-import com.timwang.mc_tower_defenser.fundation.utils.Task;
 import com.timwang.mc_tower_defenser.fundation.utils.TaskType;
-import com.timwang.mc_tower_defenser.fundation.utils.ai.profession.ProfessionBase;
+import com.timwang.mc_tower_defenser.fundation.ai.profession.ProfessionBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
